@@ -54,11 +54,11 @@ const Translate = () => {
         div.appendChild(p)
         div.scrollTo(0, div.scrollHeight)
         // console.log(audio)
-        // if (audio == true) {
-        //     console.log('test')
-        //     const utterance = new SpeechSynthesisUtterance(translate)
-        //     speechSynthesis.speak(utterance)
-        //     }
+        if (audio == true) {
+            console.log('test')
+            const utterance = new SpeechSynthesisUtterance(translate)
+            speechSynthesis.speak(utterance)
+            }
         
     }
 
@@ -79,13 +79,13 @@ const Translate = () => {
     
 //   }, [])
 
-const test = () => {
-    if(typeof window !== "undefined"){
-        const utterance = new SpeechSynthesisUtterance("testing")
-        window.speechSynthesis.speak(utterance)
-        console.log('test')
-        }
-}
+// const test = () => {
+//     if(typeof window !== "undefined"){
+//         const utterance = new SpeechSynthesisUtterance("testing")
+//         window.speechSynthesis.speak(utterance)
+//         console.log('test')
+//         }
+// }
 
 
 //just english
