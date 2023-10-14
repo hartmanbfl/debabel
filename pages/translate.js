@@ -53,21 +53,43 @@ const Translate = () => {
         p.textContent = translate
         div.appendChild(p)
         div.scrollTo(0, div.scrollHeight)
-        // const synth = window.speechSynthesis
-        // const utterance = new SpeechSynthesisUtterance(translate)
-        // synth.speak(utterance)
+        // console.log(audio)
+        // if (audio == true) {
+        //     console.log('test')
+        //     const utterance = new SpeechSynthesisUtterance(translate)
+        //     speechSynthesis.speak(utterance)
+        //     }
+        
     }
 
     addTranslate()
   }, [translate])
 
-//   document.getElementById('input').addEventListener('change', () => {
-//     if (audio == false) {
-//     setAudio(true)
-//     } else {
-//         setAudio(false)
-//     }
-//   })
+  useEffect(() => {
+    document.getElementById('input').addEventListener('change', () => {
+        if (audio == false) {
+            setAudio(true)
+        } else {
+            setAudio(false)
+        }
+    })
+  })
+
+//   useEffect(() => {
+    
+//   }, [])
+
+const test = () => {
+    if(typeof window !== "undefined"){
+        const utterance = new SpeechSynthesisUtterance("testing")
+        window.speechSynthesis.speak(utterance)
+        console.log('test')
+        }
+}
+
+
+//just english
+//text to speech
 
     return (
         <div className={styles.translatePage}>
@@ -85,11 +107,12 @@ const Translate = () => {
                 <p className={styles.translatedText}>ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</p> */}
             </div>
             </div>
-            <div>
+            <div className={styles.audioButton}>
                 <label className={styles.switch}>
-                    <input type="checkbox" />
+                    <input onChange={test} id='input' type="checkbox" />
                     <span className={styles.slider}></span>
                 </label>
+                <p>Audio</p>
             </div>
             <div className={styles.changeLanguageButton}>
                 <a>Change Language</a>
