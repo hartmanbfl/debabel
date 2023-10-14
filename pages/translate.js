@@ -109,7 +109,7 @@ const Translate = () => {
             </div>
             <div className={styles.audioButton}>
                 <label className={styles.switch}>
-                    <input onChange={test} id='input' type="checkbox" />
+                    <input id='input' type="checkbox" />
                     <span className={styles.slider}></span>
                 </label>
                 <p>Audio</p>
