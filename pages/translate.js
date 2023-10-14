@@ -20,7 +20,7 @@ const Translate = () => {
 
   const languageMap = {
     "fr": "fr-FR",
-    "ar": "ar-SA",
+    "ar": "ar-001",
     "de": "de-DE",
     "es": "es-US",
     "tr": "tr-TR",
@@ -43,11 +43,12 @@ const Translate = () => {
     socket.emit('join', room)
     }
     const room2 = `${serviceId}:transcript`
+    console.log(room2)
     
     socket.emit('join', room2)
 
     socket.on('transcript', (msg) => {
-        console.log(msg)
+        console.log(msg , 1)
         setTranscript(msg)
     })
 
@@ -57,12 +58,21 @@ const Translate = () => {
     })
   }
 
+  console.log(transcript, 3)
+  console.log(translate, 4)
+
   useEffect(() => {
     const addTranslate = () => {
         const div = document.getElementById('translationBox')
         const p = document.createElement('p')
         p.className = styles.translatedText
-        p.textContent = language == "en" ? transcript : translate
+        // console.log(language)
+        if (language == "en") {
+            console.log('yes')
+        p.textContent = transcript
+        } else {
+            p.textContent = translate
+        }
         div.appendChild(p)
         div.scrollTo(0, div.scrollHeight)
         // console.log(audio)
@@ -77,19 +87,21 @@ const Translate = () => {
     }
 
     addTranslate()
-  }, [translate])
+  }, [translate, transcript])
 
-  const speakLastTranslate = () => {
-    const utterance = new SpeechSynthesisUtterance(translate)
-            utterance.lang = languageMap[language]
-            console.log(languageMap[language])
-            speechSynthesis.speak(utterance)
-  }
+  
 
   useEffect(() => {
     document.getElementById('input').addEventListener('change', () => {
         if (audio == false) {
             setAudio(true)
+            const speakLastTranslate = () => {
+                const utterance = new SpeechSynthesisUtterance(translate)
+                        utterance.lang = languageMap[language]
+                        console.log(languageMap[language])
+                        speechSynthesis.speak(utterance)
+              }
+              speakLastTranslate()
         } else {
             setAudio(false)
         }
@@ -114,7 +126,10 @@ const Translate = () => {
 
     return (
         <div className={styles.translatePage}>
-            <h1>Debabel</h1>
+            {/* <h1>Debabel</h1> */}
+            <div className={styles.logo}>
+        <img src='/logo.png' />
+        </div>
             <div className={styles.outer}>
             <div id='translationBox' className={styles.translationBox}>
                 {/* <p className={styles.translatedText}>ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</p>
@@ -138,7 +153,7 @@ const Translate = () => {
             <div className={styles.changeLanguageButton}>
                 <a href='/?serviceId=580178'>Change Language</a>
             </div>
-            <button onClick={speakLastTranslate}>Speak</button>
+            {/* <button onClick={speakLastTranslate}>Speak</button> */}
         </div>
     );
 }

@@ -58,3 +58,12 @@
     padding: 10vw 6vw;
   }
 }
+
+.logo {
+  width: 10vw;
+}
+
+.logo img {
+  width: 100%;
+  height: auto;
+}
