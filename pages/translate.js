@@ -138,7 +138,7 @@ const Translate = () => {
             <div className={styles.changeLanguageButton}>
                 <a href='/?serviceId=580178'>Change Language</a>
             </div>
-            <button>Speak</button>
+            <button onClick={speakLastTranslate}>Speak</button>
         </div>
     );
 }
