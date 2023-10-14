@@ -57,8 +57,9 @@ const Translate = () => {
         if (audio == true) {
             console.log('test')
             const utterance = new SpeechSynthesisUtterance(translate)
+            utterance.lang = "fr-FR"
             speechSynthesis.speak(utterance)
-            }
+        }
         
     }
 
