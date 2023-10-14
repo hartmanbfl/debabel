@@ -18,6 +18,15 @@ const Translate = () => {
         }
   }, [router.isReady])
 
+  const languageMap = {
+    "fr": "fr-FR",
+    "ar": "ar-SA",
+    "de": "de-DE",
+    "es": "es-US",
+    "tr": "tr-TR",
+    "uk": "uk-UA"
+  }
+
   const socketInitializer = () => {
     socket = io('https://live-pegasus-first.ngrok-free.app')
     socket.on('connect', () => {
@@ -57,7 +66,8 @@ const Translate = () => {
         if (audio == true) {
             console.log('test')
             const utterance = new SpeechSynthesisUtterance(translate)
-            utterance.lang = "fr-FR"
+            utterance.lang = languageMap[language]
+            console.log(languageMap[language])
             speechSynthesis.speak(utterance)
         }
         
