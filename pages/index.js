@@ -70,6 +70,9 @@ export default function Home() {
             <option value="es">Spanish</option>
             <option value="tr">Turkish</option>
             <option value="uk">Ukranian</option>
+            <option value="hi">Hindi</option>
+            <option value="zh">Chinese</option>
+            <option value="fa">Persian</option>
           </select>
           </div>
           <div ref={buttonRef} onClick={handleClick} className={styles.translateButton}>

@@ -24,7 +24,10 @@ const Translate = () => {
     "de": "de-DE",
     "es": "es-US",
     "tr": "tr-TR",
-    "uk": "uk-UA"
+    "uk": "uk-UA",
+    "hi": "hi-IN",
+    "zh": "zh-CN",
+    "fa": "fa-IR",
   }
 
   const socketInitializer = () => {
