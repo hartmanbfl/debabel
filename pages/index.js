@@ -60,7 +60,7 @@ export default function Home() {
           <div className={styles.input}>
           <label>Please select your language</label>
           <select ref={selectRef}>
-            {/* <option value="">None</option> */}
+            <option value="en">English</option>
             <option value="ar">Arabic</option>
             <option value="fr">French</option>
             <option value="de">German</option>

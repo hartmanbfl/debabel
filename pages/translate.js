@@ -36,11 +36,14 @@ const Translate = () => {
     socket.on('disconnect', () => {
       console.log('disconnected from the socket')
     })
-
+    
+    if(language !== "en" ) {
     const room = `${serviceId}:${language}`; 
-    const room2 = `${serviceId}:transcript`
     console.log(room)
     socket.emit('join', room)
+    }
+    const room2 = `${serviceId}:transcript`
+    
     socket.emit('join', room2)
 
     socket.on('transcript', (msg) => {
@@ -59,7 +62,7 @@ const Translate = () => {
         const div = document.getElementById('translationBox')
         const p = document.createElement('p')
         p.className = styles.translatedText
-        p.textContent = translate
+        p.textContent = language == "en" ? transcript : translate
         div.appendChild(p)
         div.scrollTo(0, div.scrollHeight)
         // console.log(audio)
@@ -75,6 +78,13 @@ const Translate = () => {
 
     addTranslate()
   }, [translate])
+
+  const speakLastTranslate = () => {
+    const utterance = new SpeechSynthesisUtterance(translate)
+            utterance.lang = languageMap[language]
+            console.log(languageMap[language])
+            speechSynthesis.speak(utterance)
+  }
 
   useEffect(() => {
     document.getElementById('input').addEventListener('change', () => {
@@ -126,8 +136,9 @@ const Translate = () => {
                 <p>Audio</p>
             </div>
             <div className={styles.changeLanguageButton}>
-                <a>Change Language</a>
+                <a href='/?serviceId=580178'>Change Language</a>
             </div>
+            <button>Speak</button>
         </div>
     );
 }
