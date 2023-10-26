@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react'
 import styles from '../styles/Translate.module.css'
 import { io } from 'socket.io-client'
 import { useRouter } from 'next/router'
+import * as dotenv from 'dotenv';
 let socket
+
+dotenv.config();
 
 const Translate = () => {
     const [translate, setTranslate] = useState()
     const [transcript, setTranscript] = useState()
     const [audio, setAudio] = useState(false)
     const router = useRouter()
-    // const {push} = useRouter()
     const { serviceId, language } = router.query
 
     useEffect(() => {
@@ -31,7 +33,9 @@ const Translate = () => {
     }
 
     const socketInitializer = () => {
-        socket = io('https://debabel-server.onrender.com')
+        const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
+        socket = io(serverName)
+        console.log(`Connecting to server: ${serverName}`)
         socket.on('connect', () => {
             console.log('connected to the socket')
         })
@@ -111,22 +115,6 @@ const Translate = () => {
         })
     })
 
-    //   useEffect(() => {
-
-    //   }, [])
-
-    // const test = () => {
-    //     if(typeof window !== "undefined"){
-    //         const utterance = new SpeechSynthesisUtterance("testing")
-    //         window.speechSynthesis.speak(utterance)
-    //         console.log('test')
-    //         }
-    // }
-
-
-    //just english
-    //text to speech
-
     return (
         <div className={styles.translatePage}>
             {/* <h1>Debabel</h1> */}
@@ -135,15 +123,6 @@ const Translate = () => {
             </div>
             <div className={styles.outer}>
                 <div id='translationBox' className={styles.translationBox}>
-                    {/* <p className={styles.translatedText}>ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</p>
-                <p className={styles.translatedText}>ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</p>
-                <p className={styles.translatedText}>ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</p>
-                <p className={styles.translatedText}>ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</p>
-                <p className={styles.translatedText}>ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</p>
-                <p className={styles.translatedText}>ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</p>
-                <p className={styles.translatedText}>ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</p>
-                <p className={styles.translatedText}>ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</p>
-                <p className={styles.translatedText}>ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</p> */}
                 </div>
             </div>
             <div className={styles.audioButton}>
@@ -156,7 +135,6 @@ const Translate = () => {
             <div className={styles.changeLanguageButton}>
                 <a href={'/?serviceId=' + serviceId}>Change Language</a>
             </div>
-            {/* <button onClick={speakLastTranslate}>Speak</button> */}
         </div>
     );
 }
