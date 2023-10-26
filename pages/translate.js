@@ -49,10 +49,10 @@ const Translate = () => {
             console.log(room)
             socket.emit('join', room)
         }
-        const room2 = `${serviceId}:transcript`
-        console.log(room2)
+        const transcriptRoom = `${serviceId}:transcript`
+        console.log(`Joining ${transcriptRoom}`)
 
-        socket.emit('join', room2)
+        socket.emit('join', transcriptRoom)
 
         socket.on('transcript', (msg) => {
             console.log(`Transcript: ${msg}`)
@@ -65,8 +65,8 @@ const Translate = () => {
         })
     }
 
-    console.log(transcript, 3)
-    console.log(translate, 4)
+//    console.log(transcript, 3)
+//    console.log(translate, 4)
 
     useEffect(() => {
         const addTranslate = () => {

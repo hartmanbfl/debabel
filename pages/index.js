@@ -14,12 +14,12 @@ export default function Home() {
   const {push} = useRouter()
   const serviceId = router.query.serviceId || process.env.NEXT_PUBLIC_DEFAULT_SERVICE_ID 
 
-  const handleClick = (e) => {
+  const handleClick = async (e) => {
     if (selectRef.current.value == "") {
       alert("No language is selected")
     } else {
       console.log(`Selected language: ${selectRef.current.value}`)
-      push(`/translate?serviceId=${serviceId}&language=${selectRef.current.value}`)
+      await push(`/translate?serviceId=${serviceId}&language=${selectRef.current.value}`)
     }
   }
   return (
