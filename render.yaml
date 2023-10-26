@@ -1,0 +1,11 @@
+services:
+- type: web
+  name: DeBabel Client
+  env: node
+  plan: starter
+  buildCommand: yarn; yarn build
+  startCommand: yarn dev
+  autoDeploy: false
+  envVars:
+  - key: NODE_ENV
+    value: production
