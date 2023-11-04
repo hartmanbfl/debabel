@@ -8,9 +8,9 @@ let socket
 dotenv.config();
 
 const Translate = () => {
+    const [audio, setAudio] = useState(false)
     const [translate, setTranslate] = useState()
     const [transcript, setTranscript] = useState()
-    const [audio, setAudio] = useState(false)
     const router = useRouter()
     const { serviceId, language } = router.query
 
@@ -21,15 +21,16 @@ const Translate = () => {
     }, [router.isReady])
 
     const languageMap = {
-        "fr": "fr-FR",
         "ar": "ar-001",
         "de": "de-DE",
         "es": "es-US",
+        "fa": "fa-IR",
+        "fr": "fr-FR",
+        "hi": "hi-IN",
+        "ru": "ru-RU",
         "tr": "tr-TR",
         "uk": "uk-UA",
-        "hi": "hi-IN",
         "zh": "zh-CN",
-        "fa": "fa-IR",
     }
 
     const socketInitializer = () => {
@@ -40,13 +41,19 @@ const Translate = () => {
             console.log('connected to the socket')
         })
 
+        document.getElementById('changeLanguageButton').addEventListener('click', () => {
+            const room = `${serviceId}:${language}`;
+            console.log(`Leaving room ${room}`);
+            socket.emit('leave', room);
+        })
+
         socket.on('disconnect', () => {
             console.log('disconnected from the socket')
         })
 
         if (language !== "en") {
             const room = `${serviceId}:${language}`;
-            console.log(room)
+            console.log(`Joining room: ${room}`)
             socket.emit('join', room)
         }
         const transcriptRoom = `${serviceId}:transcript`
@@ -64,9 +71,6 @@ const Translate = () => {
             setTranslate(msg)
         })
     }
-
-//    console.log(transcript, 3)
-//    console.log(translate, 4)
 
     useEffect(() => {
         const addTranslate = () => {
@@ -132,7 +136,7 @@ const Translate = () => {
                 </label>
                 <p>Audio</p>
             </div>
-            <div className={styles.changeLanguageButton}>
+            <div className={styles.changeLanguageButton} id="changeLanguageButton">
                 <a href={'/?serviceId=' + serviceId}>Change Language</a>
             </div>
         </div>

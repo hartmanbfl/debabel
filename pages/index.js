@@ -40,16 +40,17 @@ export default function Home() {
           <div className={styles.input}>
           <label>Please select your language</label>
           <select ref={selectRef}>
-            <option value="en">English</option>
             <option value="ar">Arabic</option>
+            <option value="zh">Chinese</option>
+            <option value="en">English</option>
             <option value="fr">French</option>
             <option value="de">German</option>
+            <option value="hi">Hindi</option>
+            <option value="fa">Persian</option>
+            <option value="ru">Russian</option>
             <option value="es">Spanish</option>
             <option value="tr">Turkish</option>
             <option value="uk">Ukranian</option>
-            <option value="hi">Hindi</option>
-            <option value="zh">Chinese</option>
-            <option value="fa">Persian</option>
           </select>
           </div>
           <div ref={buttonRef} onClick={handleClick} className={styles.translateButton}>
