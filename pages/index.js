@@ -11,8 +11,10 @@ export default function Home() {
   const buttonRef = useRef(null)
   const selectRef = useRef(null)
   const router = useRouter()
-  const {push} = useRouter()
-  const serviceId = router.query.serviceId || process.env.NEXT_PUBLIC_DEFAULT_SERVICE_ID 
+  const { push } = useRouter()
+  const serviceId = router.query.serviceId || process.env.NEXT_PUBLIC_DEFAULT_SERVICE_ID
+
+  const LANGUAGES = process.env.NEXT_PUBLIC_LANGUAGES.split(',')
 
   const handleClick = async (e) => {
     if (selectRef.current.value == "") {
@@ -30,32 +32,33 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-     </Head>
+      </Head>
       <div className={styles.home}>
         {/* <h1>Debabel</h1> */}
         <div className={styles.logo}>
-        <img src='/logo.png' />
+          <img src='/logo.png' />
         </div>
         <div className={styles.inputBox}>
+          <img src='/NEFC.png' />
           <div className={styles.input}>
-          <label>Please select your language</label>
-          <select ref={selectRef}>
-            <option value="ar">Arabic</option>
-            <option value="zh">Chinese</option>
-            <option value="en">English</option>
-            <option value="fr">French</option>
-            <option value="de">German</option>
-            <option value="hi">Hindi</option>
-            <option value="fa">Persian</option>
-            <option value="ru">Russian</option>
-            <option value="es">Spanish</option>
-            <option value="tr">Turkish</option>
-            <option value="uk">Ukranian</option>
-          </select>
+            <label>Please select your language</label>
+            <select ref={selectRef}>
+              {LANGUAGES.map((option, index) => {
+                // Alternate between locale and language name
+                const locale = LANGUAGES[index * 2]
+                const language = LANGUAGES[index * 2 + 1]
+                if (locale && language) {
+
+                  return (
+                    <option key={locale} value={locale}>{language}</option>
+                  )
+                }
+              })}
+            </select>
           </div>
           <div ref={buttonRef} onClick={handleClick} className={styles.translateButton}>
             {/* <a href='/translate'> */}
-              TRANSLATE
+            TRANSLATE
             {/* </a> */}
           </div>
         </div>
