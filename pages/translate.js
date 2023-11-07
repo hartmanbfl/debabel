@@ -45,6 +45,10 @@ const Translate = () => {
             const room = `${serviceId}:${language}`;
             console.log(`Leaving room ${room}`);
             socket.emit('leave', room);
+            
+            // Also leave the transcript
+            const transcriptRoom = `${serviceId}:transcript`;
+            socket.emit('leave', transcriptRoom);
         })
 
         socket.on('disconnect', () => {
