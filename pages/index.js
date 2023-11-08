@@ -3,18 +3,75 @@ import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import { useRef } from 'react'
 import { useRouter } from 'next/router'
-// let socket
+import { useEffect, useState } from 'react'
+import socket from '../src/socket'
+import Indicator from '@/src/indicator'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Home() {
+const Home = () => {
   const buttonRef = useRef(null)
   const selectRef = useRef(null)
   const router = useRouter()
   const { push } = useRouter()
   const serviceId = router.query.serviceId || process.env.NEXT_PUBLIC_DEFAULT_SERVICE_ID
 
+  const [lightIsOn, setLightIsOn] = useState(false);
+
   const LANGUAGES = process.env.NEXT_PUBLIC_LANGUAGES.split(',')
+  const hearbeat = `${serviceId}:heartbeat`;
+
+  useEffect(() => {
+    // Need to check if the router is ready before trying to get the serviceId
+    // from the query parameter.
+    if (router.isReady) {
+      socketInitializer(), []
+    }
+  }, [router.isReady])
+
+  const socketInitializer = () => {
+    socket.on('connect', () => {
+      console.log('connected to the socket')
+
+      // register for the transcript heartbeats
+      console.log(`Registering for service: ${serviceId}`);
+      socket.emit('register', serviceId);
+    })
+
+    socket.on('disconnect', () => {
+      console.log('disconnected from the socket')
+    })
+
+//    socket.on('heartbeat', () => {
+//      console.log(`Received heartbeat`);
+//      restartLivestreamTimer(); 
+//      turnOnLight();
+//    })
+  }
+
+  // Create a timer that waits for x seconds.  If it expires, turn the light off
+//  let livestreamTimer;
+//  const startLivestreamTimer = () => {
+//    livestreamTimer = setTimeout(() => {
+//      turnOffLight();
+//      console.log(`Livestream is stopped.`)
+//    }, 10000);
+//  }
+//  const stopLivestreamTimer = () => {
+//    clearInterval(livestreamTimer);
+//  }
+//  const restartLivestreamTimer = () => {
+//    stopLivestreamTimer();
+//    startLivestreamTimer();
+//  }
+//
+//  const turnOnLight = () => {
+//    setLightIsOn(true);
+//  }
+//  const turnOffLight = () => {
+//    setLightIsOn(false);
+//  }
+
 
   const handleClick = async (e) => {
     if (selectRef.current.value == "") {
@@ -24,6 +81,18 @@ export default function Home() {
       await push(`/translate?serviceId=${serviceId}&language=${selectRef.current.value}`)
     }
   }
+
+  const indicatorStyle = {
+    backgroundColor: lightIsOn ? 'red' : 'transparent', // Set the background color based on the isOn state
+    borderRadius: '50%', // Make the indicator circular
+    position: 'absolute', // Position the indicator relative to its parent element
+    top: '10px', // Set the distance from the top edge of the parent element
+    right: '10px', // Set the distance from the right edge of the parent element
+    width: '20px', // Set the width of the indicator
+    height: '20px', // Set the height of the indicator
+  };
+
+//          <div style={indicatorStyle}></div>
   return (
     <>
       <Head>
@@ -37,6 +106,7 @@ export default function Home() {
         {/* <h1>Debabel</h1> */}
         <div className={styles.logo}>
           <img src='/logo.png' />
+          <Indicator socket={socket} />
         </div>
         <div className={styles.inputBox}>
           <img src='/NEFC.png' />
@@ -66,3 +136,5 @@ export default function Home() {
     </>
   )
 }
+
+export default Home;

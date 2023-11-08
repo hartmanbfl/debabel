@@ -3,7 +3,7 @@ import styles from '../styles/Translate.module.css'
 import { useRouter } from 'next/router'
 import * as dotenv from 'dotenv';
 import socket from '../src/socket'
-//let socket
+import Indicator from '@/src/indicator';
 
 dotenv.config();
 
@@ -34,24 +34,15 @@ const Translate = () => {
     }
 
     const socketInitializer = () => {
-        const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
-        console.log(`Connecting to server: ${serverName}`)
-        socket.on('connect', () => {
-            console.log('connected to the socket')
-        })
 
         document.getElementById('changeLanguageButton').addEventListener('click', () => {
             const room = `${serviceId}:${language}`;
             console.log(`Leaving room ${room}`);
             socket.emit('leave', room);
-            
+
             // Also leave the transcript
             const transcriptRoom = `${serviceId}:transcript`;
             socket.emit('leave', transcriptRoom);
-        })
-
-        socket.on('disconnect', () => {
-            console.log('disconnected from the socket')
         })
 
         if (language !== "en") {
@@ -133,6 +124,7 @@ const Translate = () => {
             {/* <h1>Debabel</h1> */}
             <div className={styles.logo}>
                 <img src='/logo.png' />
+                <Indicator socket={socket} />
             </div>
             <div className={styles.outer} id='translationOuterBox'>
                 <div id='translationBox' className={styles.translationBox}>

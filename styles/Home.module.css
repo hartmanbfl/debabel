@@ -74,3 +74,25 @@
       margin-top: -50px;
   }
 }
+
+.indicator {
+  background-color: red;
+  /* Make the indicator circular */
+  border-radius: 50%;
+  /* Position the indicator relative to its parent element */
+  position: absolute;
+  /* Set the distance from the top edge of the parent element */
+  top: 9px;
+  /* Set the distance from the right edge of the parent element */
+  right: 9px;
+  width: 19px;
+  height: 19px;
+  margin: 10px;
+}
+
+.bright {
+  filter: brightness(200%);
+}
+.off {
+  filter: brightness(0%)
+}
