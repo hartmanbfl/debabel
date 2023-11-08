@@ -79,6 +79,7 @@ const Translate = () => {
     useEffect(() => {
         const addTranslate = () => {
             const div = document.getElementById('translationBox')
+            const outerBox = document.getElementById('translationOuterBox')
             const p = document.createElement('p')
             p.className = styles.translatedText
             // console.log(language)
@@ -87,6 +88,11 @@ const Translate = () => {
                 p.textContent = transcript
             } else {
                 p.textContent = translate
+            }
+            if (language == "ar") {
+                outerBox.dir = "rtl"
+            } else {
+                outerBox.dir = "ltr"
             }
             div.appendChild(p)
             div.scrollTo(0, div.scrollHeight)
@@ -129,7 +135,7 @@ const Translate = () => {
             <div className={styles.logo}>
                 <img src='/logo.png' />
             </div>
-            <div className={styles.outer}>
+            <div className={styles.outer} id='translationOuterBox'>
                 <div id='translationBox' className={styles.translationBox}>
                 </div>
             </div>
