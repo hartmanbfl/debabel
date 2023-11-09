@@ -14,9 +14,11 @@ const Home = () => {
   const selectRef = useRef(null)
   const router = useRouter()
   const { push } = useRouter()
-  const serviceId = router.query.serviceId || process.env.NEXT_PUBLIC_DEFAULT_SERVICE_ID
 
-  const [lightIsOn, setLightIsOn] = useState(false);
+  // Get any query parameters
+  const { serviceId, livestreaming } = router.query
+
+  const [livestream, setLivestream] = useState(false);
 
   const LANGUAGES = process.env.NEXT_PUBLIC_LANGUAGES.split(',')
   const hearbeat = `${serviceId}:heartbeat`;
@@ -25,9 +27,18 @@ const Home = () => {
     // Need to check if the router is ready before trying to get the serviceId
     // from the query parameter.
     if (router.isReady) {
+      // If livestream is already active when we returned to this page
+      if (livestreaming) {
+        setLivestream(true);
+      }
       socketInitializer(), []
     }
   }, [router.isReady])
+
+  useEffect(() => {
+    console.log(`Livestream is now: ${livestream}`);
+  }, [livestream])
+
 
   const socketInitializer = () => {
     socket.on('connect', () => {
@@ -41,58 +52,22 @@ const Home = () => {
     socket.on('disconnect', () => {
       console.log('disconnected from the socket')
     })
-
-//    socket.on('heartbeat', () => {
-//      console.log(`Received heartbeat`);
-//      restartLivestreamTimer(); 
-//      turnOnLight();
-//    })
   }
-
-  // Create a timer that waits for x seconds.  If it expires, turn the light off
-//  let livestreamTimer;
-//  const startLivestreamTimer = () => {
-//    livestreamTimer = setTimeout(() => {
-//      turnOffLight();
-//      console.log(`Livestream is stopped.`)
-//    }, 10000);
-//  }
-//  const stopLivestreamTimer = () => {
-//    clearInterval(livestreamTimer);
-//  }
-//  const restartLivestreamTimer = () => {
-//    stopLivestreamTimer();
-//    startLivestreamTimer();
-//  }
-//
-//  const turnOnLight = () => {
-//    setLightIsOn(true);
-//  }
-//  const turnOffLight = () => {
-//    setLightIsOn(false);
-//  }
-
 
   const handleClick = async (e) => {
     if (selectRef.current.value == "") {
       alert("No language is selected")
     } else {
       console.log(`Selected language: ${selectRef.current.value}`)
-      await push(`/translate?serviceId=${serviceId}&language=${selectRef.current.value}`)
+      await push(`/translate?serviceId=${serviceId}&language=${selectRef.current.value}&livestreaming=${livestream}`)
     }
   }
 
-  const indicatorStyle = {
-    backgroundColor: lightIsOn ? 'red' : 'transparent', // Set the background color based on the isOn state
-    borderRadius: '50%', // Make the indicator circular
-    position: 'absolute', // Position the indicator relative to its parent element
-    top: '10px', // Set the distance from the top edge of the parent element
-    right: '10px', // Set the distance from the right edge of the parent element
-    width: '20px', // Set the width of the indicator
-    height: '20px', // Set the height of the indicator
-  };
+  // Callback for when the Indicator component changes
+  const handleIndicatorChanged = (status) => {
+      setLivestream(status);  
+  }
 
-//          <div style={indicatorStyle}></div>
   return (
     <>
       <Head>
@@ -106,7 +81,7 @@ const Home = () => {
         {/* <h1>Debabel</h1> */}
         <div className={styles.logo}>
           <img src='/logo.png' />
-          <Indicator socket={socket} />
+          <Indicator socket={socket} onLightChanged={handleIndicatorChanged}/>
         </div>
         <div className={styles.inputBox}>
           <img src='/NEFC.png' />

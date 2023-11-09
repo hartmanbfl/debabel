@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // Define a style object for the circle
 const circleStyle = {
@@ -13,20 +13,28 @@ const circleStyle = {
 };
 
 // Define a functional component that takes a prop called isOn
-function Indicator(props) {
+const Indicator = (props) => {
 
     const [lightIsOn, setLightIsOn] = React.useState(false);
+    const { socket, indicatorOn, onLightChanged } = props;
 
-    if (props.indicatorOn) {
-        turnOnLight();
-    }
+    // Run first time
+    useEffect(() => {
+        startLivestreamTimer();
+        // Monitor the socket for hearbeat messages
+        socket.on('heartbeat', () => {
+            restartLivestreamTimer();
+            turnOnLight();
+        })
+    }, [])
 
-    // Monitor the socket for hearbeat messages
-    props.socket.on('heartbeat', () => {
-        console.log(`Received heartbeat`);
-        restartLivestreamTimer();
-        turnOnLight();
-    })
+    useEffect(() => {
+        if (indicatorOn) {
+            turnOnLight();
+        } else {
+            turnOffLight();
+        }
+    }, [indicatorOn])
 
     // Create a timer that waits for x seconds.  If it expires, turn the light off
     let livestreamTimer;
@@ -43,6 +51,13 @@ function Indicator(props) {
         stopLivestreamTimer();
         startLivestreamTimer();
     }
+
+    // Execute anytime the lightIsOn variable changes
+    useEffect(() => {
+        if (onLightChanged != null) {
+            onLightChanged(lightIsOn)
+        }
+    }, [lightIsOn])
 
     const turnOnLight = () => {
         setLightIsOn(true);

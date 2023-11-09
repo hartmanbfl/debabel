@@ -12,7 +12,7 @@ const Translate = () => {
     const [translate, setTranslate] = useState()
     const [transcript, setTranscript] = useState()
     const router = useRouter()
-    const { serviceId, language } = router.query
+    const { serviceId, language, livestreaming } = router.query
 
     useEffect(() => {
         if (router.isReady) {
@@ -66,6 +66,7 @@ const Translate = () => {
         })
     }
 
+    // Runs anytime translate changes
     useEffect(() => {
         const addTranslate = () => {
             const div = document.getElementById('translationBox')
@@ -102,6 +103,7 @@ const Translate = () => {
 
 
 
+    // Runs on every render
     useEffect(() => {
         document.getElementById('input').addEventListener('change', () => {
             if (audio == false) {
@@ -124,7 +126,7 @@ const Translate = () => {
             {/* <h1>Debabel</h1> */}
             <div className={styles.logo}>
                 <img src='/logo.png' />
-                <Indicator socket={socket} />
+                <Indicator socket={socket} indicatorOn={livestreaming}/>
             </div>
             <div className={styles.outer} id='translationOuterBox'>
                 <div id='translationBox' className={styles.translationBox}>
@@ -138,7 +140,7 @@ const Translate = () => {
                 <p>Audio</p>
             </div>
             <div className={styles.changeLanguageButton} id="changeLanguageButton">
-                <a href={'/?serviceId=' + serviceId}>Change Language</a>
+                <a href={`/?serviceId=${serviceId}`}>Change Language</a>
             </div>
         </div>
     );
