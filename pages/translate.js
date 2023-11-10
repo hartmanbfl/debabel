@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import styles from '../styles/Translate.module.css'
-import { io } from 'socket.io-client'
 import { useRouter } from 'next/router'
 import * as dotenv from 'dotenv';
-let socket
+import socket from '../src/socket'
+//let socket
 
 dotenv.config();
 
@@ -35,7 +35,6 @@ const Translate = () => {
 
     const socketInitializer = () => {
         const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
-        socket = io(serverName)
         console.log(`Connecting to server: ${serverName}`)
         socket.on('connect', () => {
             console.log('connected to the socket')
