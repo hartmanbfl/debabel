@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import styles from '@/styles/Logo.module.css'
 
 
 const LogoComponent = (props) => {
@@ -16,7 +17,7 @@ const LogoComponent = (props) => {
       }, []);
 
 
-    return <div> <img src={imageUrl} alt="Church Logo"></img></div>;
+    return <div className={styles.logo}> <img src={imageUrl} alt="Church Logo"></img></div>;
 }
 
 export default LogoComponent;
