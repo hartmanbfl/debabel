@@ -3,7 +3,7 @@ import styles from '../styles/Translate.module.css'
 import { useRouter } from 'next/router'
 import * as dotenv from 'dotenv';
 import socket from '../src/socket'
-import IndicatorComponent from '@/src/indicatorComponent';
+import IndicatorComponent from '@/src/IndicatorComponent';
 
 dotenv.config();
 

@@ -5,7 +5,7 @@ import { useRef } from 'react'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import socket from '../src/socket'
-import IndicatorComponent from '@/src/indicatorComponent'
+import IndicatorComponent from '@/src/IndicatorComponent'
 import LogoComponent from '@/src/LogoComponent'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -86,7 +86,7 @@ const Home = () => {
           <IndicatorComponent socket={socket} onLightChanged={handleIndicatorChanged}/>
         </div>
         <div className={styles.inputBox}>
-          <LogoComponent churchName="GDOT"/>
+          <LogoComponent />
           <div className={styles.input}>
             <label>Please select your language</label>
             <select ref={selectRef}>

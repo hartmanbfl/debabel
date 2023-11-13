@@ -2,21 +2,21 @@ import React, { useState, useEffect } from 'react';
 
 
 const LogoComponent = (props) => {
-    const [data, setData] = useState([]);
+    const [imageUrl, setImageUrl] = useState(null);
 
     // Get the Server name from environment variable
     const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
 
     useEffect(() => {
-        fetch('https://example.com/api/data')
+        fetch(`${serverName}/churchinfo`)
           .then(response => response.json())
-          .then(data => setData(data));
+          .then(data => {
+              setImageUrl(`${serverName}/img/${data.logo}`);  
+          });
       }, []);
 
 
-    const url = `${serverName}/img/${churchName}.png`
-
-    return <div> <img src={url} alt="Church Logo"></img></div>;
+    return <div> <img src={imageUrl} alt="Church Logo"></img></div>;
 }
 
 export default LogoComponent;
