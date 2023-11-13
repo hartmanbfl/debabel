@@ -5,7 +5,8 @@ import { useRef } from 'react'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import socket from '../src/socket'
-import Indicator from '@/src/indicator'
+import IndicatorComponent from '@/src/IndicatorComponent'
+import LogoComponent from '@/src/LogoComponent'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -68,6 +69,7 @@ const Home = () => {
       setLivestream(status);  
   }
 
+//          <img src='/NEFC.png' />
   return (
     <>
       <Head>
@@ -81,10 +83,10 @@ const Home = () => {
         {/* <h1>Debabel</h1> */}
         <div className={styles.logo}>
           <img src='/logo.png' />
-          <Indicator socket={socket} onLightChanged={handleIndicatorChanged}/>
+          <IndicatorComponent socket={socket} onLightChanged={handleIndicatorChanged}/>
         </div>
         <div className={styles.inputBox}>
-          <img src='/NEFC.png' />
+          <LogoComponent />
           <div className={styles.input}>
             <label>Please select your language</label>
             <select ref={selectRef}>

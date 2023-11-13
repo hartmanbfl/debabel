@@ -13,7 +13,7 @@ const circleStyle = {
 };
 
 // Define a functional component that takes a prop called isOn
-const Indicator = (props) => {
+const IndicatorComponent = (props) => {
 
     const [lightIsOn, setLightIsOn] = React.useState(false);
     const { socket, indicatorOn, onLightChanged } = props;
@@ -70,4 +70,4 @@ const Indicator = (props) => {
     return <div>{lightIsOn ? <span style={circleStyle}></span> : null}</div>;
 }
 
-export default Indicator;
+export default IndicatorComponent;
