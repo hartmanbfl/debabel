@@ -22,7 +22,7 @@ const Indicator = (props) => {
     useEffect(() => {
         startLivestreamTimer();
         // Monitor the socket for hearbeat messages
-        socket.on('heartbeat', () => {
+        socket.on('livestreaming', () => {
             restartLivestreamTimer();
             turnOnLight();
         })
