@@ -3,7 +3,7 @@ import styles from '../styles/Translate.module.css'
 import { useRouter } from 'next/router'
 import * as dotenv from 'dotenv';
 import socket from '../src/socket'
-import Indicator from '@/src/indicator';
+import IndicatorComponent from '@/src/indicatorComponent';
 
 dotenv.config();
 
@@ -126,7 +126,7 @@ const Translate = () => {
             {/* <h1>Debabel</h1> */}
             <div className={styles.logo}>
                 <img src='/logo.png' />
-                <Indicator socket={socket} indicatorOn={livestreaming}/>
+                <IndicatorComponent socket={socket} indicatorOn={livestreaming}/>
             </div>
             <div className={styles.outer} id='translationOuterBox'>
                 <div id='translationBox' className={styles.translationBox}>
