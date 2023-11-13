@@ -3,27 +3,71 @@ import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import { useRef } from 'react'
 import { useRouter } from 'next/router'
-// let socket
+import { useEffect, useState } from 'react'
+import socket from '../src/socket'
+import Indicator from '@/src/indicator'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Home() {
+const Home = () => {
   const buttonRef = useRef(null)
   const selectRef = useRef(null)
   const router = useRouter()
   const { push } = useRouter()
-  const serviceId = router.query.serviceId || process.env.NEXT_PUBLIC_DEFAULT_SERVICE_ID
+
+  // Get any query parameters
+  const { serviceId, livestreaming } = router.query
+
+  const [livestream, setLivestream] = useState(false);
 
   const LANGUAGES = process.env.NEXT_PUBLIC_LANGUAGES.split(',')
+  const hearbeat = `${serviceId}:heartbeat`;
+
+  useEffect(() => {
+    // Need to check if the router is ready before trying to get the serviceId
+    // from the query parameter.
+    if (router.isReady) {
+      // If livestream is already active when we returned to this page
+      if (livestreaming) {
+        setLivestream(true);
+      }
+      socketInitializer(), []
+    }
+  }, [router.isReady])
+
+  useEffect(() => {
+    console.log(`Livestream is now: ${livestream}`);
+  }, [livestream])
+
+
+  const socketInitializer = () => {
+    socket.on('connect', () => {
+      console.log('connected to the socket')
+
+      // register for the transcript heartbeats
+      console.log(`Registering for service: ${serviceId}`);
+      socket.emit('register', serviceId);
+    })
+
+    socket.on('disconnect', () => {
+      console.log('disconnected from the socket')
+    })
+  }
 
   const handleClick = async (e) => {
     if (selectRef.current.value == "") {
       alert("No language is selected")
     } else {
       console.log(`Selected language: ${selectRef.current.value}`)
-      await push(`/translate?serviceId=${serviceId}&language=${selectRef.current.value}`)
+      await push(`/translate?serviceId=${serviceId}&language=${selectRef.current.value}&livestreaming=${livestream}`)
     }
   }
+
+  // Callback for when the Indicator component changes
+  const handleIndicatorChanged = (status) => {
+      setLivestream(status);  
+  }
+
   return (
     <>
       <Head>
@@ -37,6 +81,7 @@ export default function Home() {
         {/* <h1>Debabel</h1> */}
         <div className={styles.logo}>
           <img src='/logo.png' />
+          <Indicator socket={socket} onLightChanged={handleIndicatorChanged}/>
         </div>
         <div className={styles.inputBox}>
           <img src='/NEFC.png' />
@@ -66,3 +111,5 @@ export default function Home() {
     </>
   )
 }
+
+export default Home;

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import styles from '../styles/Translate.module.css'
-import { io } from 'socket.io-client'
 import { useRouter } from 'next/router'
 import * as dotenv from 'dotenv';
-let socket
+import socket from '../src/socket'
+import Indicator from '@/src/indicator';
 
 dotenv.config();
 
@@ -12,7 +12,7 @@ const Translate = () => {
     const [translate, setTranslate] = useState()
     const [transcript, setTranscript] = useState()
     const router = useRouter()
-    const { serviceId, language } = router.query
+    const { serviceId, language, livestreaming } = router.query
 
     useEffect(() => {
         if (router.isReady) {
@@ -34,25 +34,15 @@ const Translate = () => {
     }
 
     const socketInitializer = () => {
-        const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
-        socket = io(serverName)
-        console.log(`Connecting to server: ${serverName}`)
-        socket.on('connect', () => {
-            console.log('connected to the socket')
-        })
 
         document.getElementById('changeLanguageButton').addEventListener('click', () => {
             const room = `${serviceId}:${language}`;
             console.log(`Leaving room ${room}`);
             socket.emit('leave', room);
-            
+
             // Also leave the transcript
             const transcriptRoom = `${serviceId}:transcript`;
             socket.emit('leave', transcriptRoom);
-        })
-
-        socket.on('disconnect', () => {
-            console.log('disconnected from the socket')
         })
 
         if (language !== "en") {
@@ -76,6 +66,7 @@ const Translate = () => {
         })
     }
 
+    // Runs anytime translate changes
     useEffect(() => {
         const addTranslate = () => {
             const div = document.getElementById('translationBox')
@@ -112,6 +103,7 @@ const Translate = () => {
 
 
 
+    // Runs on every render
     useEffect(() => {
         document.getElementById('input').addEventListener('change', () => {
             if (audio == false) {
@@ -134,6 +126,7 @@ const Translate = () => {
             {/* <h1>Debabel</h1> */}
             <div className={styles.logo}>
                 <img src='/logo.png' />
+                <Indicator socket={socket} indicatorOn={livestreaming}/>
             </div>
             <div className={styles.outer} id='translationOuterBox'>
                 <div id='translationBox' className={styles.translationBox}>
@@ -147,7 +140,7 @@ const Translate = () => {
                 <p>Audio</p>
             </div>
             <div className={styles.changeLanguageButton} id="changeLanguageButton">
-                <a href={'/?serviceId=' + serviceId}>Change Language</a>
+                <a href={`/?serviceId=${serviceId}`}>Change Language</a>
             </div>
         </div>
     );
