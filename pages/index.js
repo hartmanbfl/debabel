@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react'
 import socket from '../src/socket'
 import IndicatorComponent from '@/src/IndicatorComponent'
 import LogoComponent from '@/src/LogoComponent'
+import PageHeaderComponent from '@/src/PageHeaderComponent'
+import WelcomeMessageComponent from '@/src/WelcomeMessageComponent'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,7 +21,8 @@ const Home = () => {
   // Get any query parameters
   const { serviceId, livestreaming } = router.query
 
-  const [livestream, setLivestream] = useState(false);
+  const [livestream, setLivestream] = useState("OFF");
+
 
   const LANGUAGES = process.env.NEXT_PUBLIC_LANGUAGES.split(',')
   const hearbeat = `${serviceId}:heartbeat`;
@@ -53,6 +56,27 @@ const Home = () => {
     socket.on('disconnect', () => {
       console.log('disconnected from the socket')
     })
+
+    socket.on('livestreaming', () => {
+      restartLivestreamTimer();
+      setLivestream("ON");
+    })
+  }
+
+  // Create a timer that waits for x seconds.  If it expires, turn the light off
+  let livestreamTimer;
+  const startLivestreamTimer = () => {
+      livestreamTimer = setTimeout(() => {
+          setLivestream("OFF"); 
+          console.log(`Livestream is stopped.`)
+      }, 5000);
+  }
+  const stopLivestreamTimer = () => {
+      clearInterval(livestreamTimer);
+  }
+  const restartLivestreamTimer = () => {
+      stopLivestreamTimer();
+      startLivestreamTimer();
   }
 
   const handleClick = async (e) => {
@@ -65,11 +89,15 @@ const Home = () => {
   }
 
   // Callback for when the Indicator component changes
-  const handleIndicatorChanged = (status) => {
-      setLivestream(status);  
-  }
+//  const handleIndicatorChanged = (status) => {
+//    setLivestream(status);
+//  }
 
-//          <img src='/NEFC.png' />
+  //          <img src='/NEFC.png' />
+  //        <div className={styles.logo}>
+  //          <img src='/logo.png' />
+  //          <IndicatorComponent socket={socket} onLightChanged={handleIndicatorChanged}/>
+  //        </div>
   return (
     <>
       <Head>
@@ -80,13 +108,10 @@ const Home = () => {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
       </Head>
       <div className={styles.home}>
-        {/* <h1>Debabel</h1> */}
-        <div className={styles.logo}>
-          <img src='/logo.png' />
-          <IndicatorComponent socket={socket} onLightChanged={handleIndicatorChanged}/>
-        </div>
+        <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
         <div className={styles.inputBox}>
           <LogoComponent />
+          <WelcomeMessageComponent />
           <div className={styles.input}>
             <label>Please select your language</label>
             <select ref={selectRef}>
