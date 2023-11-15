@@ -5,8 +5,11 @@ import { useRef } from 'react'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import socket from '../src/socket'
-import IndicatorComponent from '@/src/IndicatorComponent'
+import {livestreamEvent, initializeLivestreamController} from '../src/LivestreamController'
+
 import LogoComponent from '@/src/LogoComponent'
+import PageHeaderComponent from '@/src/PageHeaderComponent'
+import WelcomeMessageComponent from '@/src/WelcomeMessageComponent'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,7 +22,8 @@ const Home = () => {
   // Get any query parameters
   const { serviceId, livestreaming } = router.query
 
-  const [livestream, setLivestream] = useState(false);
+  const [livestream, setLivestream] = useState("OFF");
+
 
   const LANGUAGES = process.env.NEXT_PUBLIC_LANGUAGES.split(',')
   const hearbeat = `${serviceId}:heartbeat`;
@@ -36,10 +40,6 @@ const Home = () => {
     }
   }, [router.isReady])
 
-  useEffect(() => {
-    console.log(`Livestream is now: ${livestream}`);
-  }, [livestream])
-
 
   const socketInitializer = () => {
     socket.on('connect', () => {
@@ -53,6 +53,12 @@ const Home = () => {
     socket.on('disconnect', () => {
       console.log('disconnected from the socket')
     })
+
+    initializeLivestreamController();
+    const livestreamSubscription = livestreamEvent.subscribe((event) => {
+      console.log(`Livestream is now: ${event.status}`);
+      setLivestream(event.status);
+    })
   }
 
   const handleClick = async (e) => {
@@ -60,16 +66,10 @@ const Home = () => {
       alert("No language is selected")
     } else {
       console.log(`Selected language: ${selectRef.current.value}`)
-      await push(`/translate?serviceId=${serviceId}&language=${selectRef.current.value}&livestreaming=${livestream}`)
+      await push(`/translate?serviceId=${serviceId}&language=${selectRef.current.value}`)
     }
   }
 
-  // Callback for when the Indicator component changes
-  const handleIndicatorChanged = (status) => {
-      setLivestream(status);  
-  }
-
-//          <img src='/NEFC.png' />
   return (
     <>
       <Head>
@@ -80,13 +80,10 @@ const Home = () => {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
       </Head>
       <div className={styles.home}>
-        {/* <h1>Debabel</h1> */}
-        <div className={styles.logo}>
-          <img src='/logo.png' />
-          <IndicatorComponent socket={socket} onLightChanged={handleIndicatorChanged}/>
-        </div>
+        <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
         <div className={styles.inputBox}>
           <LogoComponent />
+          <WelcomeMessageComponent />
           <div className={styles.input}>
             <label>Please select your language</label>
             <select ref={selectRef}>

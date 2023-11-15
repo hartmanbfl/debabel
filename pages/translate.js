@@ -3,7 +3,8 @@ import styles from '../styles/Translate.module.css'
 import { useRouter } from 'next/router'
 import * as dotenv from 'dotenv';
 import socket from '../src/socket'
-import IndicatorComponent from '@/src/IndicatorComponent';
+import { livestreamEvent } from '@/src/LivestreamController';
+import PageHeaderComponent from '@/src/PageHeaderComponent';
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ const Translate = () => {
     const [audio, setAudio] = useState(false)
     const [translate, setTranslate] = useState()
     const [transcript, setTranscript] = useState()
+    const [livestream, setLivestream] = useState("OFF");
     const router = useRouter()
     const { serviceId, language, livestreaming } = router.query
 
@@ -63,6 +65,11 @@ const Translate = () => {
         socket.on('translation', (msg) => {
             console.log(`Translation: ${msg}`)
             setTranslate(msg)
+        })
+
+        // Register for Livestream Events
+        const subscription = livestreamEvent.subscribe((event) => {
+            setLivestream(event.status);
         })
     }
 
@@ -121,13 +128,14 @@ const Translate = () => {
         })
     })
 
+//            <div className={styles.logo}>
+//                <img src='/logo.png' />
+//                <IndicatorComponent socket={socket} indicatorOn={livestreaming}/>
+//            </div>
     return (
         <div className={styles.translatePage}>
             {/* <h1>Debabel</h1> */}
-            <div className={styles.logo}>
-                <img src='/logo.png' />
-                <IndicatorComponent socket={socket} indicatorOn={livestreaming}/>
-            </div>
+            <PageHeaderComponent sessionStatus={livestream} />
             <div className={styles.outer} id='translationOuterBox'>
                 <div id='translationBox' className={styles.translationBox}>
                 </div>
