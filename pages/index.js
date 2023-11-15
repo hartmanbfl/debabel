@@ -5,7 +5,8 @@ import { useRef } from 'react'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import socket from '../src/socket'
-import IndicatorComponent from '@/src/IndicatorComponent'
+import {livestreamEvent, initializeLivestreamController} from '../src/LivestreamController'
+
 import LogoComponent from '@/src/LogoComponent'
 import PageHeaderComponent from '@/src/PageHeaderComponent'
 import WelcomeMessageComponent from '@/src/WelcomeMessageComponent'
@@ -39,10 +40,6 @@ const Home = () => {
     }
   }, [router.isReady])
 
-  useEffect(() => {
-    console.log(`Livestream is now: ${livestream}`);
-  }, [livestream])
-
 
   const socketInitializer = () => {
     socket.on('connect', () => {
@@ -57,26 +54,11 @@ const Home = () => {
       console.log('disconnected from the socket')
     })
 
-    socket.on('livestreaming', () => {
-      restartLivestreamTimer();
-      setLivestream("ON");
+    initializeLivestreamController();
+    const livestreamSubscription = livestreamEvent.subscribe((event) => {
+      console.log(`Livestream is now: ${event.status}`);
+      setLivestream(event.status);
     })
-  }
-
-  // Create a timer that waits for x seconds.  If it expires, turn the light off
-  let livestreamTimer;
-  const startLivestreamTimer = () => {
-      livestreamTimer = setTimeout(() => {
-          setLivestream("OFF"); 
-          console.log(`Livestream is stopped.`)
-      }, 5000);
-  }
-  const stopLivestreamTimer = () => {
-      clearInterval(livestreamTimer);
-  }
-  const restartLivestreamTimer = () => {
-      stopLivestreamTimer();
-      startLivestreamTimer();
   }
 
   const handleClick = async (e) => {
@@ -84,20 +66,10 @@ const Home = () => {
       alert("No language is selected")
     } else {
       console.log(`Selected language: ${selectRef.current.value}`)
-      await push(`/translate?serviceId=${serviceId}&language=${selectRef.current.value}&livestreaming=${livestream}`)
+      await push(`/translate?serviceId=${serviceId}&language=${selectRef.current.value}`)
     }
   }
 
-  // Callback for when the Indicator component changes
-//  const handleIndicatorChanged = (status) => {
-//    setLivestream(status);
-//  }
-
-  //          <img src='/NEFC.png' />
-  //        <div className={styles.logo}>
-  //          <img src='/logo.png' />
-  //          <IndicatorComponent socket={socket} onLightChanged={handleIndicatorChanged}/>
-  //        </div>
   return (
     <>
       <Head>
