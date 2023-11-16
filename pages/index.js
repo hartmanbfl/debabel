@@ -66,12 +66,14 @@ const Home = () => {
         <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
       </Head>
-      <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
-      <div className={styles.home}>
-        <div className={styles.inputBox}>
-          <LogoComponent />
-          <WelcomeMessageComponent />
-          <LanguageButtonDropdownComponent serviceId={serviceId} languages={languagesMap}/>
+      <div className={styles.container}>
+        <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
+        <div className={styles.home}>
+          <div className={styles.inputBox}>
+            <LogoComponent />
+            <WelcomeMessageComponent />
+          </div>
+          <LanguageButtonDropdownComponent serviceId={serviceId} languages={languagesMap} />
         </div>
       </div>
     </>

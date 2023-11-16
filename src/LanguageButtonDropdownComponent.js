@@ -8,6 +8,7 @@ const customStyles = {
         ...provided,
         backgroundColor: state.isSelected ? '#1E90FF' : 'white',
         color: state.isSelected ? 'white' : 'black',
+        menuPosition: 'fixed'
     }),
 };
 
@@ -23,7 +24,8 @@ const buttonStyle = {
     padding: '10px 25px',
     margin: '0 auto',
     marginTop: '10px',
-    display: 'block'
+    display: 'block',
+    bottom: '10%',
 };
 
 const LanguageButtonDropdownComponent = ({ serviceId, languages }) => {
@@ -55,6 +57,7 @@ const LanguageButtonDropdownComponent = ({ serviceId, languages }) => {
                 options={options}
                 placeholder="Select a language"
                 styles={customStyles}
+                nenuPlacement="auto"
             />
             {/* Add button when a language is selected*/}
             {selectedLanguage && (

@@ -10,11 +10,12 @@
 }
 
 .outer {
+    margin-top: 20px;
     overflow: hidden;
     border-radius: 30px;
     display: flex;
     width: 90%;
-    height: 50%;
+    height: 60%;
     border: 1px solid black;
 }
 
