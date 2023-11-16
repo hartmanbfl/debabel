@@ -1,23 +1,20 @@
 import Head from 'next/head'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
-import { useRef } from 'react'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import socket from '../src/socket'
-import {livestreamEvent, initializeLivestreamController} from '../src/LivestreamController'
+import { livestreamEvent, initializeLivestreamController } from '../src/LivestreamController'
 
 import LogoComponent from '@/src/LogoComponent'
+import LanguageButtonDropdownComponent from '@/src/LanguageButtonDropdownComponent'
 import PageHeaderComponent from '@/src/PageHeaderComponent'
 import WelcomeMessageComponent from '@/src/WelcomeMessageComponent'
 
 const inter = Inter({ subsets: ['latin'] })
 
 const Home = () => {
-  const buttonRef = useRef(null)
-  const selectRef = useRef(null)
   const router = useRouter()
-  const { push } = useRouter()
 
   // Get any query parameters
   const { serviceId, livestreaming } = router.query
@@ -25,8 +22,7 @@ const Home = () => {
   const [livestream, setLivestream] = useState("OFF");
 
 
-  const LANGUAGES = process.env.NEXT_PUBLIC_LANGUAGES.split(',')
-  const hearbeat = `${serviceId}:heartbeat`;
+  const languagesMap = JSON.parse(process.env.NEXT_PUBLIC_LANGUAGE_MAP);
 
   useEffect(() => {
     // Need to check if the router is ready before trying to get the serviceId
@@ -56,18 +52,9 @@ const Home = () => {
 
     initializeLivestreamController();
     const livestreamSubscription = livestreamEvent.subscribe((event) => {
-      console.log(`Livestream is now: ${event.status}`);
+      //DEBUG      console.log(`Livestream is now: ${event.status}`);
       setLivestream(event.status);
     })
-  }
-
-  const handleClick = async (e) => {
-    if (selectRef.current.value == "") {
-      alert("No language is selected")
-    } else {
-      console.log(`Selected language: ${selectRef.current.value}`)
-      await push(`/translate?serviceId=${serviceId}&language=${selectRef.current.value}`)
-    }
   }
 
   return (
@@ -79,32 +66,12 @@ const Home = () => {
         <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
       </Head>
+      <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
       <div className={styles.home}>
-        <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
         <div className={styles.inputBox}>
           <LogoComponent />
           <WelcomeMessageComponent />
-          <div className={styles.input}>
-            <label>Please select your language</label>
-            <select ref={selectRef}>
-              {LANGUAGES.map((option, index) => {
-                // Alternate between locale and language name
-                const locale = LANGUAGES[index * 2]
-                const language = LANGUAGES[index * 2 + 1]
-                if (locale && language) {
-
-                  return (
-                    <option key={locale} value={locale}>{language}</option>
-                  )
-                }
-              })}
-            </select>
-          </div>
-          <div ref={buttonRef} onClick={handleClick} className={styles.translateButton}>
-            {/* <a href='/translate'> */}
-            TRANSLATE
-            {/* </a> */}
-          </div>
+          <LanguageButtonDropdownComponent serviceId={serviceId} languages={languagesMap}/>
         </div>
       </div>
     </>

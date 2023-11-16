@@ -14,7 +14,9 @@ const Translate = () => {
     const [transcript, setTranscript] = useState()
     const [livestream, setLivestream] = useState("OFF");
     const router = useRouter()
-    const { serviceId, language, livestreaming } = router.query
+    const { serviceId, locale } = router.query
+
+    let language;
 
     useEffect(() => {
         if (router.isReady) {
@@ -35,7 +37,20 @@ const Translate = () => {
         "zh": "zh-CN",
     }
 
+    const getCountryCode = (code) => {
+        const REG = /^([a-z]{2})-([A-Z]{2})$/;
+        const match = code.match(REG);
+        if (!match || match.length < 1) return '';
+        return match[2];
+    }
+    const getLanguage = (locale) => {
+        const lang = new Intl.Locale(locale).language;
+        return lang;
+    }
+
     const socketInitializer = () => {
+
+        language = getLanguage(locale);
 
         document.getElementById('changeLanguageButton').addEventListener('click', () => {
             const room = `${serviceId}:${language}`;
@@ -128,10 +143,6 @@ const Translate = () => {
         })
     })
 
-//            <div className={styles.logo}>
-//                <img src='/logo.png' />
-//                <IndicatorComponent socket={socket} indicatorOn={livestreaming}/>
-//            </div>
     return (
         <div className={styles.translatePage}>
             {/* <h1>Debabel</h1> */}
