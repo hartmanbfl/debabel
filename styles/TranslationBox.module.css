@@ -35,7 +35,7 @@
 
 .translatedText {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
 }
 
@@ -44,7 +44,7 @@
 }
 
 .transcriptText {
-    font: italic;
-    font-weight: 100;
-    font-size: 12px;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 14px;
 }

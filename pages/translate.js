@@ -3,7 +3,7 @@ import styles from '../styles/Translate.module.css'
 import { useRouter } from 'next/router'
 import * as dotenv from 'dotenv';
 import socket from '../src/socket'
-import { livestreamEvent } from '@/src/LivestreamController';
+import { initializeLivestreamController, livestreamEvent } from '@/src/LivestreamController';
 
 import AudioComponent from '@/src/AudioComponent';
 import PageHeaderComponent from '@/src/PageHeaderComponent';
@@ -22,6 +22,7 @@ const Translate = () => {
 
     useEffect(() => {
         if (router.isReady) {
+            console.log(`Initializing socket for translation page`);
             socketInitializer()
         }
     }, [router.isReady])
@@ -53,6 +54,10 @@ const Translate = () => {
     const socketInitializer = () => {
 
         language = getLanguage(locale);
+
+        // Register for heartbeats
+        initializeLivestreamController();
+        socket.emit('register', serviceId);
 
         document.getElementById('changeLanguageButton').addEventListener('click', () => {
             const room = `${serviceId}:${language}`;
@@ -90,42 +95,10 @@ const Translate = () => {
         })
     }
 
-//    // Runs anytime translate changes
-//    useEffect(() => {
-//        const addTranslate = () => {
-//            const div = document.getElementById('translationBox')
-//            const outerBox = document.getElementById('translationOuterBox')
-//            const p = document.createElement('p')
-//            p.className = styles.translatedText
-//            // console.log(language)
-//            if (language == "en") {
-//                console.log('yes')
-//                p.textContent = transcript
-//            } else {
-//                p.textContent = translate
-//            }
-//            if (language == "ar") {
-//                outerBox.dir = "rtl"
-//            } else {
-//                outerBox.dir = "ltr"
-//            }
-//            div.appendChild(p)
-//            div.scrollTo(0, div.scrollHeight)
-//        }
-//
-//        addTranslate()
-//    }, [translate])
-//
-//            <div className={styles.outer} id='translationOuterBox'>
-//                <div id='translationBox' className={styles.translationBox}>
-//                </div>
-//            </div>
-
     return (
         <div className={styles.translatePage}>
-            {/* <h1>Debabel</h1> */}
             <PageHeaderComponent sessionStatus={livestream} />
-            <TranslationBoxComponent translate={translate} transcript={transcript} language={language}/>
+            <TranslationBoxComponent translate={translate} transcript={transcript} language={language} />
             <AudioComponent locale={locale} translate={translate} />
             {/* */}
             <div className={styles.changeLanguageButton} id="changeLanguageButton">
