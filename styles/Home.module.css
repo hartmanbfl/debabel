@@ -1,15 +1,14 @@
+.container {
+  min-height: 100%;
+}
+
 .home {
   justify-content: center;
   align-content: center;
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
-  height: 100dvh;
-  padding: 0 10vw;
-}
-
-.home h1 {
-  margin-bottom: 5dvh;
+  padding: 0 5vw;
 }
 
 .inputBox {
@@ -18,38 +17,9 @@
   padding: 3vw 6vw 6vw;
   width: 100%;
   max-width: 720px;
-  display: flex;
   flex-direction: column;
   gap: 80px;
   margin-top: 0dvh;
-}
-
-
-
-.input {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.input select {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 100%;
-  cursor: pointer;
-  border-radius: 0.25rem;
-  border:  1px solid #caced1;
-  background-color: white;
-  padding: 0.675em 6em 0.675em 1em;
-}
-
-.translateButton {
-  align-self: center;
-  background-color: blue;
-  color: white;
-  padding: 15px 25px;
-  border-radius: 50px;
-  cursor: pointer; 
 }
 
 @media (max-width: 720px) {
@@ -57,36 +27,4 @@
     /* background-color: red; */
     padding: 10vw 6vw;
   }
-}
-
-.logo {
-  margin-top: 10px;
-  width: 10vw;
-}
-
-.logo img {
-  width: 100%;
-  height: auto;
-}
-
-@media screen and (max-width: 920px) {
-  .logo {
-      width: 100px;
-      margin-top: -50px;
-  }
-}
-
-.indicator {
-  background-color: red;
-  /* Make the indicator circular */
-  border-radius: 50%;
-  /* Position the indicator relative to its parent element */
-  position: absolute;
-  /* Set the distance from the top edge of the parent element */
-  top: 9px;
-  /* Set the distance from the right edge of the parent element */
-  right: 9px;
-  width: 19px;
-  height: 19px;
-  margin: 10px;
 }
