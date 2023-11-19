@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import styles from '@/styles/WelcomeMessage.module.css';
 
 const WelcomeMessageComponent = (props) => {
     const [churchProperties, setChurchProperties] = useState({
         greeting: "Welcome",
-        message: "",
+        message: [],
         additional: ""
 
     });
@@ -12,23 +12,25 @@ const WelcomeMessageComponent = (props) => {
     // Get the Server name from environment variable
     const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
 
-    useEffect(() => {
-        fetch(`${serverName}/churchinfo`)
-          .then(response => response.json())
-          .then(data => {
-            setChurchProperties({
-                greeting: data.greeting,
-                message: data.message,
-                additional: data.additionalWelcome
-            })
-          });
-      }, []);
+    useEffect(async () => {
+        // Call API and get the reponse
+        const response = await fetch(`${serverName}/churchinfo`);
+        // Parse the response as JSON
+        const data = await response.json();
+        const messages = JSON.parse(data.message);
+        setChurchProperties({
+            greeting: data.greeting,
+            message: messages,
+            additional: data.additionalWelcome
+        })
+    }, []);
 
-    return ( 
+    return (
         <div>
             <p className={styles.greeting}>{churchProperties.greeting}</p>
-            <p className={styles.standard}>{churchProperties.message}</p>
-            <p className={styles.standard}>We hope you enjoy this translation service.  If there is any other way we can help you, or if you need someone to talk to, please talk to one of the ushers.</p>
+            {churchProperties.message.map((str, index) => (
+                <p className={styles.standard}>{str}</p>
+            ))}
             <p className={styles.welcome}>{churchProperties.additional}</p>
         </div>
     )
