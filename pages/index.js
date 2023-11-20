@@ -23,6 +23,7 @@ const Home = () => {
 
 
   const languagesMap = JSON.parse(process.env.NEXT_PUBLIC_LANGUAGE_MAP);
+  const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
 
   useEffect(() => {
     // Need to check if the router is ready before trying to get the serviceId
@@ -71,7 +72,8 @@ const Home = () => {
         <div className={styles.home}>
           <div className={styles.inputBox}>
             <LogoComponent />
-            <WelcomeMessageComponent />
+            {/* */}
+            <WelcomeMessageComponent serverName={serverName} />
           </div>
           <LanguageButtonDropdownComponent serviceId={serviceId} languages={languagesMap} />
         </div>
