@@ -20,10 +20,30 @@ const Home = () => {
   const { serviceId, livestreaming } = router.query
 
   const [livestream, setLivestream] = useState("OFF");
+  const [languageMap, setLanguageMap] = useState([]);
 
+  const [churchWelcome, setChurchWelcome] = useState({
+    greeting: "",
+    messages: [],
+    additionalMessage: ""
+  });
 
-  const languagesMap = JSON.parse(process.env.NEXT_PUBLIC_LANGUAGE_MAP);
   const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
+
+  useEffect(() => {
+    // Get the specific church properties from the server
+    const fetchData = async () => {
+      const response = await fetch(`${serverName}/churchinfo`);
+      const data = await response.json();
+      if (data.translationLanguages != null) {
+          setLanguageMap(JSON.parse(data.translationLanguages));
+      }
+      const churchMessages = JSON.parse(data.message);
+      setChurchWelcome( { greeting: data.greeting, messages: churchMessages, additionalMessage: data.additionalWelcome } )
+    }
+
+    fetchData();
+  }, [])
 
   useEffect(() => {
     // Need to check if the router is ready before trying to get the serviceId
@@ -73,9 +93,9 @@ const Home = () => {
           <div className={styles.inputBox}>
             <LogoComponent />
             {/* */}
-            <WelcomeMessageComponent serverName={serverName} />
+            <WelcomeMessageComponent serverName={serverName} churchWelcome={churchWelcome}/>
           </div>
-          <LanguageButtonDropdownComponent serviceId={serviceId} languages={languagesMap} />
+          <LanguageButtonDropdownComponent serviceId={serviceId} languages={languageMap} />
         </div>
       </div>
     </>
