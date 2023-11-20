@@ -91,9 +91,9 @@ const Home = () => {
         <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
         <div className={styles.home}>
           <div className={styles.inputBox}>
-            <LogoComponent />
+            <LogoComponent serverName={serverName}/>
             {/* */}
-            <WelcomeMessageComponent serverName={serverName} churchWelcome={churchWelcome}/>
+            <WelcomeMessageComponent churchWelcome={churchWelcome}/>
           </div>
           <LanguageButtonDropdownComponent serviceId={serviceId} languages={languageMap} />
         </div>

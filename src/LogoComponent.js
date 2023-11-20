@@ -2,11 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styles from '@/styles/Logo.module.css'
 
 
-const LogoComponent = (props) => {
+const LogoComponent = ( {serverName} ) => {
     const [imageUrl, setImageUrl] = useState(null);
-
-    // Get the Server name from environment variable
-    const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
 
     useEffect(() => {
         fetch(`${serverName}/churchinfo`)
