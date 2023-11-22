@@ -17,7 +17,7 @@ const Home = () => {
   const router = useRouter()
 
   // Get any query parameters
-  const { serviceId, livestreaming } = router.query
+  const { serviceId } = router.query
 
   const [livestream, setLivestream] = useState("OFF");
   const [languageMap, setLanguageMap] = useState([]);
@@ -49,10 +49,6 @@ const Home = () => {
     // Need to check if the router is ready before trying to get the serviceId
     // from the query parameter.
     if (router.isReady) {
-      // If livestream is already active when we returned to this page
-      if (livestreaming) {
-        setLivestream(true);
-      }
       socketInitializer(), []
     }
   }, [router.isReady])

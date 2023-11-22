@@ -69,11 +69,10 @@ const Translate = () => {
             socket.emit('leave', transcriptRoom);
         })
 
-        if (language !== "en") {
-            const room = `${serviceId}:${language}`;
-            console.log(`Joining room: ${room}`)
-            socket.emit('join', room)
-        }
+        const room = `${serviceId}:${language}`;
+        console.log(`Joining room: ${room}`)
+        socket.emit('join', room)
+        
         const transcriptRoom = `${serviceId}:transcript`
         console.log(`Joining ${transcriptRoom}`)
 
