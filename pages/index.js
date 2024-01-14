@@ -17,7 +17,7 @@ const Home = () => {
   const router = useRouter()
 
   // Get any query parameters
-  const { serviceId } = router.query
+  let { serviceId } = router.query
 
   const [livestream, setLivestream] = useState("OFF");
   const [languageMap, setLanguageMap] = useState([]);
