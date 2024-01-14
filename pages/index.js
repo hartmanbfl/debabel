@@ -21,6 +21,7 @@ const Home = () => {
 
   const [livestream, setLivestream] = useState("OFF");
   const [languageMap, setLanguageMap] = useState([]);
+  const [defaultServiceId, setDefaultServiceId] = useState("");
 
   const [churchWelcome, setChurchWelcome] = useState({
     greeting: "",
@@ -38,6 +39,7 @@ const Home = () => {
       if (data.translationLanguages != null) {
           setLanguageMap(JSON.parse(data.translationLanguages));
       }
+      setDefaultServiceId(JSON.parse(data.defaultServiceId));
       const churchMessages = JSON.parse(data.message);
       setChurchWelcome( { greeting: data.greeting, messages: churchMessages, additionalMessage: data.additionalWelcome } )
     }
@@ -59,6 +61,9 @@ const Home = () => {
       console.log('connected to the socket')
 
       // register for the transcript heartbeats
+      if (serviceId == null || serviceId == "") {
+        serviceId = defaultServiceId;
+      }
       console.log(`Registering for service: ${serviceId}`);
       socket.emit('register', serviceId);
     })
