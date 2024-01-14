@@ -61,7 +61,8 @@ const Home = () => {
       console.log('connected to the socket')
 
       // register for the transcript heartbeats
-      if (serviceId == null || serviceId == "") {
+      if (serviceId == null || serviceId.length == 0 || serviceId == "") {
+        console.log(`Service ID not defined so using default ID from server of: ${defaultServiceId}`);
         serviceId = defaultServiceId;
       }
       console.log(`Registering for service: ${serviceId}`);
