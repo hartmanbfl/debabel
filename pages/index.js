@@ -36,17 +36,21 @@ const Home = () => {
     const fetchData = async () => {
       const response = await fetch(`${serverName}/churchinfo`);
       const data = await response.json();
+      console.log(`Data: ${data}`);
       if (data.translationLanguages != null) {
           setLanguageMap(JSON.parse(data.translationLanguages));
       }
       setDefaultServiceId(JSON.parse(data.defaultServiceId));
-      console.log(`Received default Service ID: ${defaultServiceId}`);
       const churchMessages = JSON.parse(data.message);
       setChurchWelcome( { greeting: data.greeting, messages: churchMessages, additionalMessage: data.additionalWelcome } )
     }
 
     fetchData();
   }, [])
+
+  useEffect(() => {
+      console.log(`Received default Service ID: ${defaultServiceId}`);
+  }, [defaultServiceId])
 
   useEffect(() => {
     // Need to check if the router is ready before trying to get the serviceId
