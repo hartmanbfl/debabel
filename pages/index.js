@@ -65,7 +65,7 @@ const Home = () => {
 
   const socketInitializer = () => {
     socket.connect(); 
-    socket.on('connection', () => {
+    socket.on('connect', () => {
       console.log('connected to the socket')
 
       // register for the transcript heartbeats
