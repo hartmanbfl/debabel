@@ -55,7 +55,7 @@ const Home = () => {
     // Need to check if the router is ready before trying to get the serviceId
     // from the query parameter.
     console.log(`router.isReady-> ${router.isReady}, defaultServiceId-> ${defaultServiceId}, type-> ${typeof defaultServiceId}`);
-    if (router.isReady && defaultServiceId > 0) {
+    if (router.isReady && defaultServiceId.length > 0) {
       console.log(`Calling socket initializer`);
       socketInitializer(), []
     }
@@ -63,7 +63,7 @@ const Home = () => {
 
 
   const socketInitializer = () => {
-    socket.on('connect', () => {
+    socket.on('connection', () => {
       console.log('connected to the socket')
 
       // register for the transcript heartbeats
