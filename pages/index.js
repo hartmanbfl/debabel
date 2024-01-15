@@ -71,9 +71,11 @@ const Home = () => {
       // register for the transcript heartbeats
       if (serviceId == null || serviceId.length == 0 || serviceId == "") {
         console.log(`Service ID not defined so using default ID from server of: ${defaultServiceId}`);
+        socket.emit('register', defaultServiceId);
+      } else {
+        socket.emit('register', serviceId);
       }
       console.log(`Registering for service: ${serviceId}`);
-      socket.emit('register', serviceId);
     })
 
     socket.on('disconnect', () => {
