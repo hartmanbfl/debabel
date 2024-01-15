@@ -11,6 +11,9 @@ import LanguageButtonDropdownComponent from '@/src/LanguageButtonDropdownCompone
 import PageHeaderComponent from '@/src/PageHeaderComponent'
 import WelcomeMessageComponent from '@/src/WelcomeMessageComponent'
 
+import io from 'socket.io-client'
+
+
 const inter = Inter({ subsets: ['latin'] })
 
 const Home = () => {
