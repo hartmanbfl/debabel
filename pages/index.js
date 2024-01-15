@@ -21,7 +21,7 @@ const Home = () => {
 
   const [livestream, setLivestream] = useState("OFF");
   const [languageMap, setLanguageMap] = useState([]);
-  const [defaultServiceId, setDefaultServiceId] = useState("");
+  const [defaultServiceId, setDefaultServiceId] = useState(0);
 
   const [churchWelcome, setChurchWelcome] = useState({
     greeting: "",
@@ -54,8 +54,8 @@ const Home = () => {
   useEffect(() => {
     // Need to check if the router is ready before trying to get the serviceId
     // from the query parameter.
-    console.log(`router.isReady-> ${router.isReady}, defaultServiceId-> ${defaultServiceId}, length-> ${defaultServiceId.length}, type-> ${typeof defaultServiceId}`);
-    if (router.isReady && defaultServiceId.length > 0) {
+    console.log(`router.isReady-> ${router.isReady}, defaultServiceId-> ${defaultServiceId}, type-> ${typeof defaultServiceId}`);
+    if (router.isReady && defaultServiceId > 0) {
       console.log(`Calling socket initializer`);
       socketInitializer(), []
     }
