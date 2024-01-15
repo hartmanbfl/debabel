@@ -21,7 +21,8 @@ const Home = () => {
 
   const [livestream, setLivestream] = useState("OFF");
   const [languageMap, setLanguageMap] = useState([]);
-  const [defaultServiceId, setDefaultServiceId] = useState(0);
+  const [defaultServiceId, setDefaultServiceId] = useState("");
+  const [serviceCode, setServiceCode] = useState("")
 
   const [churchWelcome, setChurchWelcome] = useState({
     greeting: "",
@@ -48,8 +49,9 @@ const Home = () => {
   }, [])
 
   useEffect(() => {
-      console.log(`Received default Service ID: ${defaultServiceId}`);
-  }, [defaultServiceId])
+      console.log(`Received default Service ID: ${serviceCode}`);
+      socket.emit('register', serviceCode);
+  }, [serviceCode])
 
   useEffect(() => {
     // Need to check if the router is ready before trying to get the serviceId
@@ -71,11 +73,13 @@ const Home = () => {
       // register for the transcript heartbeats
       if (serviceId == null || serviceId.length == 0 || serviceId == "") {
         console.log(`Service ID not defined so using default ID from server of: ${defaultServiceId}`);
-        socket.emit('register', defaultServiceId);
-        console.log(`Registering for service: ${defaultServiceId}`);
+        setServiceCode(defaultServiceId);
+//        socket.emit('register', defaultServiceId);
+//        console.log(`Registering for service: ${defaultServiceId}`);
       } else {
-        socket.emit('register', serviceId);
-        console.log(`Registering for service: ${serviceId}`);
+        setServiceCode(serviceId);
+//        socket.emit('register', queryServiceId);
+//        console.log(`Registering for service: ${queryServiceId}`);
       }
     })
 
@@ -107,7 +111,7 @@ const Home = () => {
             {/* */}
             <WelcomeMessageComponent churchWelcome={churchWelcome}/>
           </div>
-          <LanguageButtonDropdownComponent serviceId={serviceId} languages={languageMap} />
+          <LanguageButtonDropdownComponent serviceId={serviceCode} languages={languageMap} />
         </div>
       </div>
     </>
