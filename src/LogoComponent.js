@@ -9,7 +9,7 @@ const LogoComponent = ( {serverName} ) => {
         fetch(`${serverName}/churchinfo`)
           .then(response => response.json())
           .then(data => {
-              setImageUrl(`${data.base64Logo}`);  
+              setImageUrl(`${serverName}/img/${data.logo}`);  
           });
       }, []);
 
