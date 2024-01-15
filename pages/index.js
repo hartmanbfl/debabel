@@ -54,8 +54,9 @@ const Home = () => {
   useEffect(() => {
     // Need to check if the router is ready before trying to get the serviceId
     // from the query parameter.
-    console.log(`router.isReady-> ${router.isReady}, defaultServiceId-> ${defaultServiceId}, length-> ${defaultServiceId.length}`);
-    if (router.isReady && defaultServiceId.length > 0) {
+    const tempString = defaultServiceId;
+    console.log(`router.isReady-> ${router.isReady}, defaultServiceId-> ${defaultServiceId}, length-> ${tempString.length}`);
+    if (router.isReady && tempString.length > 0) {
       console.log(`Calling socket initializer`);
       socketInitializer(), []
     }
