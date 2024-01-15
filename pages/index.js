@@ -11,9 +11,6 @@ import LanguageButtonDropdownComponent from '@/src/LanguageButtonDropdownCompone
 import PageHeaderComponent from '@/src/PageHeaderComponent'
 import WelcomeMessageComponent from '@/src/WelcomeMessageComponent'
 
-import io from 'socket.io-client'
-
-
 const inter = Inter({ subsets: ['latin'] })
 
 const Home = () => {
@@ -67,7 +64,7 @@ const Home = () => {
 
 
   const socketInitializer = () => {
-    socket = io(process.env.NEXT_PUBLIC_SERVER_NAME);
+    socket.connect(); 
     socket.on('connection', () => {
       console.log('connected to the socket')
 
