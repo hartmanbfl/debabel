@@ -72,10 +72,11 @@ const Home = () => {
       if (serviceId == null || serviceId.length == 0 || serviceId == "") {
         console.log(`Service ID not defined so using default ID from server of: ${defaultServiceId}`);
         socket.emit('register', defaultServiceId);
+        console.log(`Registering for service: ${defaultServiceId}`);
       } else {
         socket.emit('register', serviceId);
+        console.log(`Registering for service: ${serviceId}`);
       }
-      console.log(`Registering for service: ${serviceId}`);
     })
 
     socket.on('disconnect', () => {
