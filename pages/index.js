@@ -17,7 +17,7 @@ const Home = () => {
   const router = useRouter()
 
   // Get any query parameters
-  let serviceId = router.query;
+  const { serviceId } = router.query;
 
   const [livestream, setLivestream] = useState("OFF");
   const [languageMap, setLanguageMap] = useState([]);
@@ -39,7 +39,7 @@ const Home = () => {
       if (data.translationLanguages != null) {
           setLanguageMap(JSON.parse(data.translationLanguages));
       }
-      setDefaultServiceId(JSON.parse(data.defaultServiceId));
+      setDefaultServiceId(data.defaultServiceId);
       const churchMessages = JSON.parse(data.message);
       setChurchWelcome( { greeting: data.greeting, messages: churchMessages, additionalMessage: data.additionalWelcome } )
     }
@@ -69,7 +69,6 @@ const Home = () => {
       // register for the transcript heartbeats
       if (serviceId == null || serviceId.length == 0 || serviceId == "") {
         console.log(`Service ID not defined so using default ID from server of: ${defaultServiceId}`);
-        serviceId = defaultServiceId; 
       }
       console.log(`Registering for service: ${serviceId}`);
       socket.emit('register', serviceId);
