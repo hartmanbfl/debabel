@@ -56,6 +56,7 @@ const Home = () => {
     // from the query parameter.
     console.log(`router.isReady-> ${router.isReady}, defaultServiceId-> ${defaultServiceId}, type-> ${typeof defaultServiceId}`);
     if (router.isReady && defaultServiceId.length > 0) {
+//    if (router.isReady) {
       console.log(`Calling socket initializer`);
       socketInitializer(), []
     }
@@ -63,6 +64,7 @@ const Home = () => {
 
 
   const socketInitializer = () => {
+    socket.io(process.env.NEXT_PUBLIC_SERVER_NAME);
     socket.on('connection', () => {
       console.log('connected to the socket')
 
