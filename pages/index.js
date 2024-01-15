@@ -40,6 +40,7 @@ const Home = () => {
           setLanguageMap(JSON.parse(data.translationLanguages));
       }
       setDefaultServiceId(JSON.parse(data.defaultServiceId));
+      console.log(`Received default Service ID: ${defaultServiceId}`);
       const churchMessages = JSON.parse(data.message);
       setChurchWelcome( { greeting: data.greeting, messages: churchMessages, additionalMessage: data.additionalWelcome } )
     }
