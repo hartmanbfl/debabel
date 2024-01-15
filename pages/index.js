@@ -56,6 +56,7 @@ const Home = () => {
     // from the query parameter.
     console.log(`router.isReady-> ${router.isReady}, defaultServiceId-> ${defaultServiceId}`);
     if (router.isReady && defaultServiceId.length > 0) {
+      console.log(`Calling socket initializer`);
       socketInitializer(), []
     }
   }, [router.isReady, defaultServiceId])
