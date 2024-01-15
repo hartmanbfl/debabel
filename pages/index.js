@@ -64,7 +64,7 @@ const Home = () => {
 
 
   const socketInitializer = () => {
-    socket.io(process.env.NEXT_PUBLIC_SERVER_NAME);
+    socket = io(process.env.NEXT_PUBLIC_SERVER_NAME);
     socket.on('connection', () => {
       console.log('connected to the socket')
 
