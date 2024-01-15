@@ -17,7 +17,7 @@ const Home = () => {
   const router = useRouter()
 
   // Get any query parameters
-  const [serviceId, setServiceId]  = useState(router.query);
+  let serviceId = router.query;
 
   const [livestream, setLivestream] = useState("OFF");
   const [languageMap, setLanguageMap] = useState([]);
@@ -36,7 +36,6 @@ const Home = () => {
     const fetchData = async () => {
       const response = await fetch(`${serverName}/churchinfo`);
       const data = await response.json();
-      console.log(`Data: ${data}`);
       if (data.translationLanguages != null) {
           setLanguageMap(JSON.parse(data.translationLanguages));
       }
@@ -55,6 +54,7 @@ const Home = () => {
   useEffect(() => {
     // Need to check if the router is ready before trying to get the serviceId
     // from the query parameter.
+    console.log(`router.isReady-> ${router.isReady}, defaultServiceId-> ${defaultServiceId}`);
     if (router.isReady && defaultServiceId.length > 0) {
       socketInitializer(), []
     }
@@ -68,7 +68,7 @@ const Home = () => {
       // register for the transcript heartbeats
       if (serviceId == null || serviceId.length == 0 || serviceId == "") {
         console.log(`Service ID not defined so using default ID from server of: ${defaultServiceId}`);
-        setServiceId(defaultServiceId);
+        serviceId = defaultServiceId; 
       }
       console.log(`Registering for service: ${serviceId}`);
       socket.emit('register', serviceId);
