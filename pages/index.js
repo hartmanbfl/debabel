@@ -17,10 +17,12 @@ const Home = () => {
   const router = useRouter()
 
   // Get any query parameters
-  const { serviceId } = router.query
+  const { serviceId } = router.query;
 
   const [livestream, setLivestream] = useState("OFF");
   const [languageMap, setLanguageMap] = useState([]);
+  const [defaultServiceId, setDefaultServiceId] = useState("");
+  const [serviceCode, setServiceCode] = useState("")
 
   const [churchWelcome, setChurchWelcome] = useState({
     greeting: "",
@@ -36,35 +38,48 @@ const Home = () => {
       const response = await fetch(`${serverName}/churchinfo`);
       const data = await response.json();
       if (data.translationLanguages != null) {
-          setLanguageMap(JSON.parse(data.translationLanguages));
+        setLanguageMap(JSON.parse(data.translationLanguages));
       }
+      setDefaultServiceId(data.defaultServiceId);
       const churchMessages = JSON.parse(data.message);
-      setChurchWelcome( { greeting: data.greeting, messages: churchMessages, additionalMessage: data.additionalWelcome } )
+      setChurchWelcome({ greeting: data.greeting, messages: churchMessages, additionalMessage: data.additionalWelcome })
     }
 
     fetchData();
   }, [])
 
   useEffect(() => {
+    if (serviceCode != null && serviceCode.length > 0) {
+      console.log(`Received default Service ID: ${serviceCode}`);
+      socket.emit('register', serviceCode);
+    }
+  }, [serviceCode])
+
+  useEffect(() => {
     // Need to check if the router is ready before trying to get the serviceId
     // from the query parameter.
-    if (router.isReady) {
+    if (router.isReady && defaultServiceId.length > 0) {
       socketInitializer(), []
     }
-  }, [router.isReady])
+  }, [router.isReady, defaultServiceId])
 
 
   const socketInitializer = () => {
+    socket.connect();
     socket.on('connect', () => {
-      console.log('connected to the socket')
+      console.log(`${socket.id} connected to the socket`);
 
       // register for the transcript heartbeats
-      console.log(`Registering for service: ${serviceId}`);
-      socket.emit('register', serviceId);
+      if (serviceId == null || serviceId.length == 0 || serviceId == "") {
+        console.log(`Service ID not defined so using default ID from server of: ${defaultServiceId}`);
+        setServiceCode(defaultServiceId);
+      } else {
+        setServiceCode(serviceId);
+      }
     })
 
-    socket.on('disconnect', () => {
-      console.log('disconnected from the socket')
+    socket.on('disconnect', (reason) => {
+      console.log(`${socket.id} disconnected from the socket.  Reason-> ${reason}`);
     })
 
     initializeLivestreamController();
@@ -87,11 +102,11 @@ const Home = () => {
         <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
         <div className={styles.home}>
           <div className={styles.inputBox}>
-            <LogoComponent serverName={serverName}/>
+            <LogoComponent serverName={serverName} />
             {/* */}
-            <WelcomeMessageComponent churchWelcome={churchWelcome}/>
+            <WelcomeMessageComponent churchWelcome={churchWelcome} />
           </div>
-          <LanguageButtonDropdownComponent serviceId={serviceId} languages={languageMap} />
+          <LanguageButtonDropdownComponent serviceId={serviceCode} languages={languageMap} />
         </div>
       </div>
     </>
