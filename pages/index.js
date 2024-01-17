@@ -10,6 +10,7 @@ import LogoComponent from '@/src/LogoComponent'
 import LanguageButtonDropdownComponent from '@/src/LanguageButtonDropdownComponent'
 import PageHeaderComponent from '@/src/PageHeaderComponent'
 import WelcomeMessageComponent from '@/src/WelcomeMessageComponent'
+import { serviceStatusFetcher } from '@/src/ServerStatusController'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -50,7 +51,8 @@ const Home = () => {
 
   useEffect(() => {
     if (serviceCode != null && serviceCode.length > 0) {
-      console.log(`Received default Service ID: ${serviceCode}`);
+      serviceStatusFetcher(serviceCode);
+      console.log(`Received Service ID: ${serviceCode}`);
       socket.emit('register', serviceCode);
     }
   }, [serviceCode])
