@@ -12,10 +12,13 @@ export const serviceStatusFetcher = (serviceId) => {
         console.log(`API data: ${apiData}`);
     }, [apiData]);
 
-    const fetchData = () => {
-        fetch(`${serverName}/serverStatus?serviceId=${serviceId}`)
-            .then((response) => response.json())
-            .then((json) => setApiData(json))
+    const fetchData = async () => {
+        console.log(`Fetching server status for: ${serviceId} `);
+        const response = await fetch(`${serverName}/serviceStatus?serviceId=${serviceId}`);
+        console.log(`Response: ${response}`);
+        const data = await response.json();
+        console.log(`Data: ${data}`);
+        setApiData(data);
     }
 
     let fetchTimer;
