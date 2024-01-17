@@ -5,8 +5,7 @@ const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
 
 
 export const serviceStatusFetcher = (serviceId) => {
-    const [apiData, setApiData] = useState(null);
-    const [stopMessage, setStopMessage] = useState("Done");
+    const [apiData, setApiData] = useState();
 
     useEffect(() => {
         console.log(`API data: ${apiData}`);
