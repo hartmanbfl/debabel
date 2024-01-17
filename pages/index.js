@@ -64,7 +64,7 @@ const Home = () => {
       //      console.log(`Calling socket initializer`);
       socketInitializer(), []
     }
-  }, [router.isReady, defaultServiceId])
+  }, [router.isReady])
 
 
   const socketInitializer = () => {
@@ -76,12 +76,8 @@ const Home = () => {
       if (serviceId == null || serviceId.length == 0 || serviceId == "") {
         console.log(`Service ID not defined so using default ID from server of: ${defaultServiceId}`);
         setServiceCode(defaultServiceId);
-        //        socket.emit('register', defaultServiceId);
-        //        console.log(`Registering for service: ${defaultServiceId}`);
       } else {
         setServiceCode(serviceId);
-        //        socket.emit('register', queryServiceId);
-        //        console.log(`Registering for service: ${queryServiceId}`);
       }
     })
 
