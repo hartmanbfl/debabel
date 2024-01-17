@@ -10,7 +10,7 @@ import LogoComponent from '@/src/LogoComponent'
 import LanguageButtonDropdownComponent from '@/src/LanguageButtonDropdownComponent'
 import PageHeaderComponent from '@/src/PageHeaderComponent'
 import WelcomeMessageComponent from '@/src/WelcomeMessageComponent'
-import { serviceStatusFetcher } from '@/src/ServerStatusController'
+import { serviceStatusFetcher } from '@/src/ServiceStatusController'
 
 const inter = Inter({ subsets: ['latin'] })
 
