@@ -17,3 +17,10 @@
     font-size: 18px;
     margin-bottom: 20px;
 }
+
+.waiting {
+    color: #134E64;
+    font-size: 21px;
+    text-align: center;
+    margin-bottom: 10px;
+}

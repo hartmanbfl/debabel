@@ -11,6 +11,7 @@ import LanguageButtonDropdownComponent from '@/src/LanguageButtonDropdownCompone
 import PageHeaderComponent from '@/src/PageHeaderComponent'
 import WelcomeMessageComponent from '@/src/WelcomeMessageComponent'
 import ServiceStatusComponent from '@/src/ServiceStatusComponent'
+import WaitingMessageComponent from '@/src/WaitingMessageComponent'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -30,7 +31,8 @@ const Home = () => {
   const [churchWelcome, setChurchWelcome] = useState({
     greeting: "",
     messages: [],
-    additionalMessage: ""
+    additionalMessage: "",
+    waiting: ""
   });
 
   const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
@@ -45,7 +47,12 @@ const Home = () => {
       }
       setDefaultServiceId(data.defaultServiceId);
       const churchMessages = JSON.parse(data.message);
-      setChurchWelcome({ greeting: data.greeting, messages: churchMessages, additionalMessage: data.additionalWelcome })
+      setChurchWelcome({ 
+        greeting: data.greeting, 
+        messages: churchMessages, 
+        additionalMessage: data.additionalWelcome,
+        waiting: data.waiting
+       })
     }
 
     fetchData();
@@ -125,6 +132,9 @@ const Home = () => {
           </div>
           {serviceReady && 
              <LanguageButtonDropdownComponent serviceId={serviceCode} languages={languageMap} />
+          }
+          {!serviceReady &&
+              <WaitingMessageComponent message={churchWelcome.waiting} />  
           }
         </div>
       </div>
