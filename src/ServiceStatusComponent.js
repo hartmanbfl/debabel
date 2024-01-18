@@ -26,7 +26,7 @@ const ServiceStatusComponent = ({ serviceId, parentCallback }) => {
             instance.current.interval = setInterval(() => {
                 fetchData(serviceId);
             }, 10000);
-            return () => clearInterval(interval);
+            return () => clearInterval(instance.current.interval);
         }
     }, [serviceId]);
 
