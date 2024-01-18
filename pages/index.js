@@ -10,6 +10,8 @@ import LogoComponent from '@/src/LogoComponent'
 import LanguageButtonDropdownComponent from '@/src/LanguageButtonDropdownComponent'
 import PageHeaderComponent from '@/src/PageHeaderComponent'
 import WelcomeMessageComponent from '@/src/WelcomeMessageComponent'
+import ServiceStatusComponent from '@/src/ServiceStatusComponent'
+import WaitingMessageComponent from '@/src/WaitingMessageComponent'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,11 +25,14 @@ const Home = () => {
   const [languageMap, setLanguageMap] = useState([]);
   const [defaultServiceId, setDefaultServiceId] = useState("");
   const [serviceCode, setServiceCode] = useState("")
+  const [serviceReady, setServiceReady] = useState(false);
+
 
   const [churchWelcome, setChurchWelcome] = useState({
     greeting: "",
     messages: [],
-    additionalMessage: ""
+    additionalMessage: "",
+    waiting: ""
   });
 
   const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
@@ -42,34 +47,52 @@ const Home = () => {
       }
       setDefaultServiceId(data.defaultServiceId);
       const churchMessages = JSON.parse(data.message);
-      setChurchWelcome({ greeting: data.greeting, messages: churchMessages, additionalMessage: data.additionalWelcome })
+      setChurchWelcome({ 
+        greeting: data.greeting, 
+        messages: churchMessages, 
+        additionalMessage: data.additionalWelcome,
+        waiting: data.waiting
+       })
     }
 
     fetchData();
   }, [])
 
+  // When we have a valid service code and that service ID is actively being controlled
+  // on the server side, then register the app.
   useEffect(() => {
-    if (serviceCode != null && serviceCode.length > 0) {
-      console.log(`Received default Service ID: ${serviceCode}`);
+    if (serviceCode != null && serviceCode.length > 0 && serviceReady) {
+      console.log(`Received Service ID: ${serviceCode}`);
       socket.emit('register', serviceCode);
     }
-  }, [serviceCode])
+  }, [serviceCode, serviceReady])
 
   useEffect(() => {
     // Need to check if the router is ready before trying to get the serviceId
-    // from the query parameter.
-    if (router.isReady && defaultServiceId.length > 0) {
+    // from the query parameter. Also the default needs to be received from
+    // the server
+    if (router.isReady && defaultServiceId.length > 0 ) {
       socketInitializer(), []
     }
   }, [router.isReady, defaultServiceId])
 
+
+  // Make sure the server side has initialized this service before
+  // trying to register
+  const handleServiceStatusCallback = (serviceStatusData) => {
+    const { active } = serviceStatusData;
+    console.log(`Setting service ready to ${active}`);
+    setServiceReady(active);
+  }
+  useEffect(() => {
+    console.log(`The service status is now: ${serviceReady}`);
+  }, [serviceReady]);
 
   const socketInitializer = () => {
     socket.connect();
     socket.on('connect', () => {
       console.log(`${socket.id} connected to the socket`);
 
-      // register for the transcript heartbeats
       if (serviceId == null || serviceId.length == 0 || serviceId == "") {
         console.log(`Service ID not defined so using default ID from server of: ${defaultServiceId}`);
         setServiceCode(defaultServiceId);
@@ -99,6 +122,7 @@ const Home = () => {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
       </Head>
       <div className={styles.container}>
+        <ServiceStatusComponent serviceId={serviceCode} parentCallback={handleServiceStatusCallback} />
         <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
         <div className={styles.home}>
           <div className={styles.inputBox}>
@@ -106,7 +130,12 @@ const Home = () => {
             {/* */}
             <WelcomeMessageComponent churchWelcome={churchWelcome} />
           </div>
-          <LanguageButtonDropdownComponent serviceId={serviceCode} languages={languageMap} />
+          {serviceReady && 
+             <LanguageButtonDropdownComponent serviceId={serviceCode} languages={languageMap} />
+          }
+          {!serviceReady &&
+              <WaitingMessageComponent message={churchWelcome.waiting} />  
+          }
         </div>
       </div>
     </>
