@@ -10,7 +10,7 @@ import LogoComponent from '@/src/LogoComponent'
 import LanguageButtonDropdownComponent from '@/src/LanguageButtonDropdownComponent'
 import PageHeaderComponent from '@/src/PageHeaderComponent'
 import WelcomeMessageComponent from '@/src/WelcomeMessageComponent'
-import { serviceStatusFetcher } from '@/src/ServiceStatusController'
+import ServiceStatusComponent from '@/src/ServiceStatusComponent'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,6 +24,8 @@ const Home = () => {
   const [languageMap, setLanguageMap] = useState([]);
   const [defaultServiceId, setDefaultServiceId] = useState("");
   const [serviceCode, setServiceCode] = useState("")
+  const [serviceReady, setServiceReady] = useState(false);
+
 
   const [churchWelcome, setChurchWelcome] = useState({
     greeting: "",
@@ -51,7 +53,6 @@ const Home = () => {
 
   useEffect(() => {
     if (serviceCode != null && serviceCode.length > 0) {
-      serviceStatusFetcher(serviceCode);
       console.log(`Received Service ID: ${serviceCode}`);
       socket.emit('register', serviceCode);
     }
@@ -60,11 +61,22 @@ const Home = () => {
   useEffect(() => {
     // Need to check if the router is ready before trying to get the serviceId
     // from the query parameter.
-    if (router.isReady && defaultServiceId.length > 0) {
+    if (router.isReady && defaultServiceId.length > 0 ) {
       socketInitializer(), []
     }
   }, [router.isReady, defaultServiceId])
 
+
+  // Make sure the server side has initialized this service before
+  // trying to register
+  const handleServiceStatusCallback = (serviceStatusData) => {
+    const { active } = serviceStatusData;
+    console.log(`Setting service ready to ${active}`);
+    setServiceReady(active);
+  }
+  useEffect(() => {
+    console.log(`The service status is now: ${serviceReady}`);
+  }, [serviceReady]);
 
   const socketInitializer = () => {
     socket.connect();
@@ -101,6 +113,7 @@ const Home = () => {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
       </Head>
       <div className={styles.container}>
+        <ServiceStatusComponent serviceId={serviceCode} parentCallback={handleServiceStatusCallback} />
         <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
         <div className={styles.home}>
           <div className={styles.inputBox}>
@@ -108,7 +121,9 @@ const Home = () => {
             {/* */}
             <WelcomeMessageComponent churchWelcome={churchWelcome} />
           </div>
-          <LanguageButtonDropdownComponent serviceId={serviceCode} languages={languageMap} />
+          {serviceReady && 
+             <LanguageButtonDropdownComponent serviceId={serviceCode} languages={languageMap} />
+          }
         </div>
       </div>
     </>
