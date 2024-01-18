@@ -51,16 +51,19 @@ const Home = () => {
     fetchData();
   }, [])
 
+  // When we have a valid service code and that service ID is actively being controlled
+  // on the server side, then register the app.
   useEffect(() => {
-    if (serviceCode != null && serviceCode.length > 0) {
+    if (serviceCode != null && serviceCode.length > 0 && serviceReady) {
       console.log(`Received Service ID: ${serviceCode}`);
       socket.emit('register', serviceCode);
     }
-  }, [serviceCode])
+  }, [serviceCode, serviceReady])
 
   useEffect(() => {
     // Need to check if the router is ready before trying to get the serviceId
-    // from the query parameter.
+    // from the query parameter. Also the default needs to be received from
+    // the server
     if (router.isReady && defaultServiceId.length > 0 ) {
       socketInitializer(), []
     }
@@ -83,7 +86,6 @@ const Home = () => {
     socket.on('connect', () => {
       console.log(`${socket.id} connected to the socket`);
 
-      // register for the transcript heartbeats
       if (serviceId == null || serviceId.length == 0 || serviceId == "") {
         console.log(`Service ID not defined so using default ID from server of: ${defaultServiceId}`);
         setServiceCode(defaultServiceId);
