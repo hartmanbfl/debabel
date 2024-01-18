@@ -40,19 +40,26 @@ const Home = () => {
   useEffect(() => {
     // Get the specific church properties from the server
     const fetchData = async () => {
+      console.log(`Connecting to: ${serverName}/churchinfo`);
       const response = await fetch(`${serverName}/churchinfo`);
       const data = await response.json();
       if (data.translationLanguages != null) {
+        console.log(`Received data: `.concat(JSON.stringify(data)));
         setLanguageMap(JSON.parse(data.translationLanguages));
+      
+        setDefaultServiceId(data.defaultServiceId);
+        const churchMessages = JSON.parse(data.message);
+        setChurchWelcome({ 
+          greeting: data.greeting, 
+          messages: churchMessages, 
+          additionalMessage: data.additionalWelcome,
+          waiting: data.waiting
+         })
       }
-      setDefaultServiceId(data.defaultServiceId);
-      const churchMessages = JSON.parse(data.message);
-      setChurchWelcome({ 
-        greeting: data.greeting, 
-        messages: churchMessages, 
-        additionalMessage: data.additionalWelcome,
-        waiting: data.waiting
-       })
+      else
+      {
+        console.log(`No data`);
+      }
     }
 
     fetchData();
