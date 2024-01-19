@@ -47,12 +47,12 @@ const Home = () => {
       }
       setDefaultServiceId(data.defaultServiceId);
       const churchMessages = JSON.parse(data.message);
-      setChurchWelcome({ 
-        greeting: data.greeting, 
-        messages: churchMessages, 
+      setChurchWelcome({
+        greeting: data.greeting,
+        messages: churchMessages,
         additionalMessage: data.additionalWelcome,
         waiting: data.waiting
-       })
+      })
     }
 
     fetchData();
@@ -71,7 +71,7 @@ const Home = () => {
     // Need to check if the router is ready before trying to get the serviceId
     // from the query parameter. Also the default needs to be received from
     // the server
-    if (router.isReady && defaultServiceId.length > 0 ) {
+    if (router.isReady && defaultServiceId.length > 0) {
       socketInitializer(), []
     }
   }, [router.isReady, defaultServiceId])
@@ -129,13 +129,13 @@ const Home = () => {
             <LogoComponent serverName={serverName} />
             {/* */}
             <WelcomeMessageComponent churchWelcome={churchWelcome} />
+            {serviceReady &&
+              <LanguageButtonDropdownComponent serviceId={serviceCode} languages={languageMap} />
+            }
+            {!serviceReady &&
+              <WaitingMessageComponent message={churchWelcome.waiting} />
+            }
           </div>
-          {serviceReady && 
-             <LanguageButtonDropdownComponent serviceId={serviceCode} languages={languageMap} />
-          }
-          {!serviceReady &&
-              <WaitingMessageComponent message={churchWelcome.waiting} />  
-          }
         </div>
       </div>
     </>
