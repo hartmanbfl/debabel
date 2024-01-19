@@ -47,19 +47,27 @@ const Home = () => {
         console.log(`Received data: `.concat(JSON.stringify(data)));
         setLanguageMap(JSON.parse(data.translationLanguages));
       
-        setDefaultServiceId(data.defaultServiceId);
-        const churchMessages = JSON.parse(data.message);
-        setChurchWelcome({ 
-          greeting: data.greeting, 
-          messages: churchMessages, 
-          additionalMessage: data.additionalWelcome,
-          waiting: data.waiting
-         })
+//        setDefaultServiceId(data.defaultServiceId);
+//        const churchMessages = JSON.parse(data.message);
+//        setChurchWelcome({ 
+//          greeting: data.greeting, 
+//          messages: churchMessages, 
+//          additionalMessage: data.additionalWelcome,
+//          waiting: data.waiting
+//         })
       }
       else
       {
         console.log(`No data`);
       }
+      setDefaultServiceId(data.defaultServiceId);
+      const churchMessages = JSON.parse(data.message);
+      setChurchWelcome({
+        greeting: data.greeting,
+        messages: churchMessages,
+        additionalMessage: data.additionalWelcome,
+        waiting: data.waiting
+      })
     }
 
     fetchData();
@@ -136,13 +144,13 @@ const Home = () => {
             <LogoComponent serverName={serverName} />
             {/* */}
             <WelcomeMessageComponent churchWelcome={churchWelcome} />
+            {serviceReady &&
+              <LanguageButtonDropdownComponent serviceId={serviceCode} languages={languageMap} />
+            }
+            {!serviceReady &&
+              <WaitingMessageComponent message={churchWelcome.waiting} />
+            }
           </div>
-          {serviceReady && 
-             <LanguageButtonDropdownComponent serviceId={serviceCode} languages={languageMap} />
-          }
-          {!serviceReady &&
-              <WaitingMessageComponent message={churchWelcome.waiting} />  
-          }
         </div>
       </div>
     </>
