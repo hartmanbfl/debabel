@@ -78,7 +78,7 @@ const Home = () => {
     // Need to check if the router is ready before trying to get the serviceId
     // from the query parameter. Also the default needs to be received from
     // the server
-    if (router.isReady && defaultServiceId.length > 0 ) {
+    if (router.isReady && defaultServiceId != null && defaultServiceId.length > 0 ) {
       socketInitializer(), []
     }
   }, [router.isReady, defaultServiceId])
