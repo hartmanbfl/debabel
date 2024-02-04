@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import * as dotenv from 'dotenv';
 import socket from '../src/socket'
 import { initializeLivestreamController, livestreamEvent } from '@/src/LivestreamController';
+import { getLanguage } from '@/src/Utilities';
 
 import AudioComponent from '@/src/AudioComponent';
 import PageHeaderComponent from '@/src/PageHeaderComponent';
@@ -27,29 +28,10 @@ const Translate = () => {
         }
     }, [router.isReady])
 
-    const languageMap = {
-        "ar": "ar-001",
-        "de": "de-DE",
-        "es": "es-US",
-        "fa": "fa-IR",
-        "fr": "fr-FR",
-        "hi": "hi-IN",
-        "ru": "ru-RU",
-        "tr": "tr-TR",
-        "uk": "uk-UA",
-        "zh": "zh-CN",
-    }
-
-    const getCountryCode = (code) => {
-        const REG = /^([a-z]{2})-([A-Z]{2})$/;
-        const match = code.match(REG);
-        if (!match || match.length < 1) return '';
-        return match[2];
-    }
-    const getLanguage = (locale) => {
-        const lang = new Intl.Locale(locale).language;
-        return lang;
-    }
+//    const getLanguage = (locale) => {
+//        const lang = new Intl.Locale(locale).language;
+//        return lang;
+//    }
 
     const socketInitializer = () => {
 
@@ -86,6 +68,10 @@ const Translate = () => {
         socket.on('translation', (msg) => {
             console.log(`Translation: ${msg}`)
             setTranslate(msg)
+        })
+
+        socket.on('disconnect', () => {
+            console.log(`${socket.id} in translate disconnected from the socket.  Reason-> ${reason}`);
         })
 
         // Register for Livestream Events

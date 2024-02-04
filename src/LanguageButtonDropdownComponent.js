@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Select from 'react-select'
-import { useRouter } from 'next/router';
 
 
 const customStyles = {
@@ -28,8 +27,7 @@ const buttonStyle = {
     bottom: '10%',
 };
 
-const LanguageButtonDropdownComponent = ({ serviceId, languages }) => {
-    const { push } = useRouter();
+const LanguageButtonDropdownComponent = ({ languages, onClick }) => {
     const options = languages.map((language) => ({
         value: language.locale,
         label: language.name
@@ -40,10 +38,6 @@ const LanguageButtonDropdownComponent = ({ serviceId, languages }) => {
     const handleChange = (selectedLanguage) => {
         setSelectedLanguage(selectedLanguage);
     };
-    const handleButtonClick = async (serviceId) => {
-        const language = JSON.parse(JSON.stringify(selectedLanguage)).value;
-        await push(`/translate?serviceId=${serviceId}&locale=${language}`)
-    }
 
     useEffect(() => {
         console.log(`Language is now: ${JSON.stringify(selectedLanguage)}`);
@@ -61,7 +55,7 @@ const LanguageButtonDropdownComponent = ({ serviceId, languages }) => {
             />
             {/* Add button when a language is selected*/}
             {selectedLanguage && (
-                <button style={buttonStyle} onClick={() => {handleButtonClick(serviceId)}}>
+                <button style={buttonStyle} onClick={() => onClick(selectedLanguage)}>
                     Start
                 </button>
             )}
