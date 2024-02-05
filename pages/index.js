@@ -4,7 +4,6 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import socket from '../src/socket'
 import { getLanguage } from '@/src/Utilities'
-import { livestreamEvent, initializeLivestreamController } from '../src/LivestreamController'
 
 import AudioComponent from '@/src/AudioComponent'
 import LogoComponent from '@/src/LogoComponent'
@@ -15,6 +14,7 @@ import ServiceStatusComponent from '@/src/ServiceStatusComponent'
 import TranslationBoxComponent from '@/src/TranslationBoxComponent'
 import WaitingMessageComponent from '@/src/WaitingMessageComponent'
 import ChangeLanguageButtonComponent from '@/src/ChangeLanguageButtonComponent'
+import LivestreamComponent from '@/src/LivestreamComponent'
 
 const Home = () => {
   const router = useRouter()
@@ -134,12 +134,6 @@ const Home = () => {
     socket.on('disconnect', (reason) => {
       console.log(`${socket.id} in index disconnected from the socket.  Reason-> ${reason}`);
     })
-
-    initializeLivestreamController();
-    const livestreamSubscription = livestreamEvent.subscribe((event) => {
-      //DEBUG      console.log(`Livestream is now: ${event.status}`);
-      setLivestream(event.status);
-    })
   }
 
   const joinRoom = (language) => {
@@ -155,6 +149,10 @@ const Home = () => {
 
   }
 
+  const handleLivestreamCallback = (status) => {
+    setLivestream(status);
+  }
+
   const handleStartButton = (chosenLang) => {
     const locale = JSON.parse(JSON.stringify(chosenLang)).value;
     const language = getLanguage(locale);
@@ -162,16 +160,6 @@ const Home = () => {
     setTranslationLocale(locale);
     console.log(`Setting the language to ${language} and locale to ${locale}`);
     joinRoom(language);
-
-    //    const room = `${serviceCode}:${language}`;
-    //    console.log(`Joining room: ${room}`)
-    //    socket.emit('join', room)
-    //
-    //    const transcriptRoom = `${serviceCode}:transcript`
-    //    console.log(`Joining ${transcriptRoom}`)
-    //
-    //    socket.emit('join', transcriptRoom)
-    //    setTranslationInProgress(true);
   }
 
   const handleChangeLanguageButton = () => {
@@ -196,6 +184,7 @@ const Home = () => {
       </Head>
       <div className={styles.container}>
         <ServiceStatusComponent serviceId={serviceCode} parentCallback={handleServiceStatusCallback} />
+        <LivestreamComponent socket={socket} parentCallback={handleLivestreamCallback} />
         <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
         {!translationInProgress &&
           <div className={styles.home}>
