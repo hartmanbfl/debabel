@@ -101,6 +101,12 @@ const Home = () => {
     socket.on('connect', () => {
       console.log(`${socket.id} connected to the socket`);
 
+      if (socket.recovered) {
+        console.log(`Successfully recovered socket: ${socket.id}`);
+      } else {
+        console.log(`Unable to recover socket: ${socket.id}`);
+      }
+
       if (serviceId == null || serviceId.length == 0 || serviceId == "") {
         console.log(`Service ID not defined so using default ID from server of: ${defaultServiceId}`);
         setServiceCode(defaultServiceId);
