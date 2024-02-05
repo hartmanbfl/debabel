@@ -1,19 +1,20 @@
 import Head from 'next/head'
-import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import socket from '../src/socket'
-import { livestreamEvent, initializeLivestreamController } from '../src/LivestreamController'
+import { getLanguage } from '@/src/Utilities'
 
+import AudioComponent from '@/src/AudioComponent'
 import LogoComponent from '@/src/LogoComponent'
 import LanguageButtonDropdownComponent from '@/src/LanguageButtonDropdownComponent'
 import PageHeaderComponent from '@/src/PageHeaderComponent'
 import WelcomeMessageComponent from '@/src/WelcomeMessageComponent'
 import ServiceStatusComponent from '@/src/ServiceStatusComponent'
+import TranslationBoxComponent from '@/src/TranslationBoxComponent'
 import WaitingMessageComponent from '@/src/WaitingMessageComponent'
-
-const inter = Inter({ subsets: ['latin'] })
+import ChangeLanguageButtonComponent from '@/src/ChangeLanguageButtonComponent'
+import LivestreamComponent from '@/src/LivestreamComponent'
 
 const Home = () => {
   const router = useRouter()
@@ -27,6 +28,13 @@ const Home = () => {
   const [serviceCode, setServiceCode] = useState("")
   const [serviceReady, setServiceReady] = useState(false);
 
+  const [translationInProgress, setTranslationInProgress] = useState(false);
+  const [translate, setTranslate] = useState()
+  const [transcript, setTranscript] = useState()
+
+  const [translationLanguage, setTranslationLanguage] = useState();
+  const [translationLocale, setTranslationLocale] = useState();
+
 
   const [churchWelcome, setChurchWelcome] = useState({
     greeting: "",
@@ -36,6 +44,11 @@ const Home = () => {
   });
 
   const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
+
+  // Keep track of when things change
+  useEffect(() => {
+    console.log(`Updated Settings:\n\tLanguage: ${translationLanguage}\n\tLocale: ${translationLocale}\n\tService: ${serviceCode}`);
+  },[serviceCode, translationLanguage, translationLocale]);
 
   useEffect(() => {
     // Get the specific church properties from the server
@@ -93,6 +106,14 @@ const Home = () => {
     socket.on('connect', () => {
       console.log(`${socket.id} connected to the socket`);
 
+      if (socket.recovered) {
+        console.log(`Successfully recovered socket: ${socket.id}`);
+      } else {
+        // This means that all rooms, connections have been lost, so we need to re-establish
+        console.log(`Unable to recover socket: ${socket.id}`);
+        console.log(`Current Settings:\n\tLanguage: ${translationLanguage}\n\tLocale: ${translationLocale}\n\tService: ${serviceCode}`);
+      }
+
       if (serviceId == null || serviceId.length == 0 || serviceId == "") {
         console.log(`Service ID not defined so using default ID from server of: ${defaultServiceId}`);
         setServiceCode(defaultServiceId);
@@ -100,16 +121,56 @@ const Home = () => {
         setServiceCode(serviceId);
       }
     })
+    socket.on('transcript', (msg) => {
+      console.log(`Transcript: ${msg}`)
+      setTranscript(msg)
+    })
+
+    socket.on('translation', (msg) => {
+      console.log(`Translation: ${msg}`)
+      setTranslate(msg)
+    })
 
     socket.on('disconnect', (reason) => {
-      console.log(`${socket.id} disconnected from the socket.  Reason-> ${reason}`);
+      console.log(`${socket.id} in index disconnected from the socket.  Reason-> ${reason}`);
     })
+  }
 
-    initializeLivestreamController();
-    const livestreamSubscription = livestreamEvent.subscribe((event) => {
-      //DEBUG      console.log(`Livestream is now: ${event.status}`);
-      setLivestream(event.status);
-    })
+  const joinRoom = (language) => {
+    const room = `${serviceCode}:${language}`;
+    console.log(`Joining room: ${room}`)
+    socket.emit('join', room)
+
+    const transcriptRoom = `${serviceCode}:transcript`
+    console.log(`Joining ${transcriptRoom}`)
+
+    socket.emit('join', transcriptRoom)
+    setTranslationInProgress(true);
+
+  }
+
+  const handleLivestreamCallback = (status) => {
+    setLivestream(status);
+  }
+
+  const handleStartButton = (chosenLang) => {
+    const locale = JSON.parse(JSON.stringify(chosenLang)).value;
+    const language = getLanguage(locale);
+    setTranslationLanguage(language);
+    setTranslationLocale(locale);
+    console.log(`Setting the language to ${language} and locale to ${locale}`);
+    joinRoom(language);
+  }
+
+  const handleChangeLanguageButton = () => {
+    const room = `${serviceCode}:${translationLanguage}`;
+    console.log(`Leaving room ${room}`);
+    socket.emit('leave', room);
+
+    // Also leave the transcript
+    const transcriptRoom = `${serviceCode}:transcript`;
+    socket.emit('leave', transcriptRoom);
+    setTranslationInProgress(false);
   }
 
   return (
@@ -123,20 +184,31 @@ const Home = () => {
       </Head>
       <div className={styles.container}>
         <ServiceStatusComponent serviceId={serviceCode} parentCallback={handleServiceStatusCallback} />
+        <LivestreamComponent socket={socket} parentCallback={handleLivestreamCallback} />
         <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
-        <div className={styles.home}>
-          <div className={styles.inputBox}>
-            <LogoComponent serverName={serverName} />
-            {/* */}
-            <WelcomeMessageComponent churchWelcome={churchWelcome} />
-            {serviceReady &&
-              <LanguageButtonDropdownComponent serviceId={serviceCode} languages={languageMap} />
-            }
-            {!serviceReady &&
-              <WaitingMessageComponent message={churchWelcome.waiting} />
-            }
+        {!translationInProgress &&
+          <div className={styles.home}>
+            <div className={styles.inputBox}>
+              <LogoComponent serverName={serverName} />
+              {/* */}
+              <WelcomeMessageComponent churchWelcome={churchWelcome} />
+              {serviceReady &&
+                <LanguageButtonDropdownComponent languages={languageMap} onClick={handleStartButton} />
+              }
+              {!serviceReady &&
+                <WaitingMessageComponent message={churchWelcome.waiting} />
+              }
+            </div>
           </div>
-        </div>
+        }
+        {translationInProgress &&
+          <div className={styles.translatePage}>
+            <TranslationBoxComponent translate={translate} transcript={transcript} language={translationLanguage} />
+            <AudioComponent locale={translationLocale} translate={translate} />
+            <ChangeLanguageButtonComponent onClick={handleChangeLanguageButton} />
+            {/* */}
+          </div>
+        }
       </div>
     </>
   )

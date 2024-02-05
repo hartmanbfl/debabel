@@ -11,6 +11,17 @@
   padding: 0 5vw;
 }
 
+.translatePage {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 1040px;
+    margin: auto;
+    gap: 30px;
+}
+
 .inputBox {
   background-color: #fff;
   border-radius: 20px;
@@ -20,6 +31,15 @@
   flex-direction: column;
   gap: 80px;
   margin-top: 0dvh;
+}
+
+.changeLanguageButton {
+    align-self: center;
+    background-color: blue;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 50px;
+    cursor: pointer;
 }
 
 @media (max-width: 720px) {
