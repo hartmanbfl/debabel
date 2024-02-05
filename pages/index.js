@@ -104,7 +104,9 @@ const Home = () => {
       if (socket.recovered) {
         console.log(`Successfully recovered socket: ${socket.id}`);
       } else {
+        // This means that all rooms, connections have been lost, so we need to re-establish
         console.log(`Unable to recover socket: ${socket.id}`);
+        console.log(`Current Settings:\n\tLanguage: ${translationLanguage}\n\tLocale: ${translationLocale}\n\tService: ${serviceCode}`);
       }
 
       if (serviceId == null || serviceId.length == 0 || serviceId == "") {
@@ -135,13 +137,7 @@ const Home = () => {
     })
   }
 
-  const handleStartButton = (chosenLang) => {
-    const locale = JSON.parse(JSON.stringify(chosenLang)).value;
-    const language = getLanguage(locale);
-    setTranslationLanguage(language);
-    setTranslationLocale(locale);
-    console.log(`Setting the language to ${language} and locale to ${locale}`);
-
+  const joinRoom = (language) => {
     const room = `${serviceCode}:${language}`;
     console.log(`Joining room: ${room}`)
     socket.emit('join', room)
@@ -151,6 +147,26 @@ const Home = () => {
 
     socket.emit('join', transcriptRoom)
     setTranslationInProgress(true);
+
+  }
+
+  const handleStartButton = (chosenLang) => {
+    const locale = JSON.parse(JSON.stringify(chosenLang)).value;
+    const language = getLanguage(locale);
+    setTranslationLanguage(language);
+    setTranslationLocale(locale);
+    console.log(`Setting the language to ${language} and locale to ${locale}`);
+    joinRoom(language);
+
+//    const room = `${serviceCode}:${language}`;
+//    console.log(`Joining room: ${room}`)
+//    socket.emit('join', room)
+//
+//    const transcriptRoom = `${serviceCode}:transcript`
+//    console.log(`Joining ${transcriptRoom}`)
+//
+//    socket.emit('join', transcriptRoom)
+//    setTranslationInProgress(true);
   }
 
   const handleChangeLanguageButton = () => {
