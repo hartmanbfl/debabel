@@ -45,6 +45,11 @@ const Home = () => {
 
   const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
 
+  // Keep track of when things change
+  useEffect(() => {
+    console.log(`Updated Settings:\n\tLanguage: ${translationLanguage}\n\tLocale: ${translationLocale}\n\tService: ${serviceCode}`);
+  },[serviceCode, translationLanguage, translationLocale]);
+
   useEffect(() => {
     // Get the specific church properties from the server
     const fetchData = async () => {
@@ -158,15 +163,15 @@ const Home = () => {
     console.log(`Setting the language to ${language} and locale to ${locale}`);
     joinRoom(language);
 
-//    const room = `${serviceCode}:${language}`;
-//    console.log(`Joining room: ${room}`)
-//    socket.emit('join', room)
-//
-//    const transcriptRoom = `${serviceCode}:transcript`
-//    console.log(`Joining ${transcriptRoom}`)
-//
-//    socket.emit('join', transcriptRoom)
-//    setTranslationInProgress(true);
+    //    const room = `${serviceCode}:${language}`;
+    //    console.log(`Joining room: ${room}`)
+    //    socket.emit('join', room)
+    //
+    //    const transcriptRoom = `${serviceCode}:transcript`
+    //    console.log(`Joining ${transcriptRoom}`)
+    //
+    //    socket.emit('join', transcriptRoom)
+    //    setTranslationInProgress(true);
   }
 
   const handleChangeLanguageButton = () => {
