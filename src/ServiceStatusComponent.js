@@ -8,15 +8,15 @@ const ServiceStatusComponent = ({ serviceId, parentCallback }) => {
 
 
     useEffect(() => {
-        console.log(`API data: ${JSON.stringify(apiData)}`);
+//debug        console.log(`API data: ${JSON.stringify(apiData)}`);
         if (apiData) {
             // Let the parent (index) know the status
             parentCallback(apiData);
 
-            if (apiData.active == true) {
-                console.log(`Service is active, stopping fetch.`);
-                clearInterval(instance.current.interval);
-            }
+//            if (apiData.active == true) {
+//                console.log(`Service is active, stopping fetch.`);
+//                clearInterval(instance.current.interval);
+//            }
         }
     }, [apiData]);
 
@@ -25,14 +25,21 @@ const ServiceStatusComponent = ({ serviceId, parentCallback }) => {
             console.log(`Starting polling for service code ${serviceId} to be initialized`);
             instance.current.interval = setInterval(() => {
                 fetchData(serviceId);
-            }, 10000);
+            }, 5000);
             return () => clearInterval(instance.current.interval);
         }
     }, [serviceId]);
 
+    const handleFetchError = (error) => {
+        // send api data
+        const apiData = {active:false};
+        parentCallback(JSON.stringify(apiData));
+
+    }
     const fetchData = async (serviceId) => {
-        console.log(`Fetching server status for: ${serviceId} `);
-        const response = await fetch(`${serverName}/serviceStatus?serviceId=${serviceId}`);
+//debug        console.log(`Fetching server status for: ${serviceId} `);
+        const response = await (fetch(`${serverName}/serviceStatus?serviceId=${serviceId}`))
+            .catch(handleFetchError);
         const data = await response.json();
         setApiData(data);
     }

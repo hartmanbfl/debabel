@@ -23,7 +23,7 @@ const TranslationBoxComponent = ({ translate, transcript, language }) => {
     // Runs anytime translate changes
     useEffect(() => {
         const addTranslate = () => {
-//DEBUG            console.log(`Translate: ${translate}, transcript: ${transcript}, hostLang: ${churchProperties.hostLanguage}, langugage: ${language}`);
+            console.log(`Translate: ${translate}, transcript: ${transcript}, hostLang: ${churchProperties.hostLanguage}, langugage: ${language}`);
             const div = document.getElementById('translationBox')
             const outerBox = document.getElementById('translationOuterBox')
 

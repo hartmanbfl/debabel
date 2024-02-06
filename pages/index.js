@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import socket from '../src/socket'
 import { getLanguage } from '@/src/Utilities'
 
@@ -13,7 +13,7 @@ import WelcomeMessageComponent from '@/src/WelcomeMessageComponent'
 import ServiceStatusComponent from '@/src/ServiceStatusComponent'
 import TranslationBoxComponent from '@/src/TranslationBoxComponent'
 import WaitingMessageComponent from '@/src/WaitingMessageComponent'
-import ChangeLanguageButtonComponent from '@/src/ChangeLanguageButtonComponent'
+import StopTranslationButtonComponent from '@/src/StopTranslationButtonComponent'
 import LivestreamComponent from '@/src/LivestreamComponent'
 
 const Home = () => {
@@ -27,6 +27,7 @@ const Home = () => {
   const [defaultServiceId, setDefaultServiceId] = useState("");
   const [serviceCode, setServiceCode] = useState("")
   const [serviceReady, setServiceReady] = useState(false);
+  const [rejoin, setRejoin] = useState(false);
 
   const [translationInProgress, setTranslationInProgress] = useState(false);
   const [translate, setTranslate] = useState()
@@ -34,6 +35,8 @@ const Home = () => {
 
   const [translationLanguage, setTranslationLanguage] = useState();
   const [translationLocale, setTranslationLocale] = useState();
+
+  const translationRef = useRef(false);
 
 
   const [churchWelcome, setChurchWelcome] = useState({
@@ -47,8 +50,8 @@ const Home = () => {
 
   // Keep track of when things change
   useEffect(() => {
-    console.log(`Updated Settings:\n\tLanguage: ${translationLanguage}\n\tLocale: ${translationLocale}\n\tService: ${serviceCode}`);
-  },[serviceCode, translationLanguage, translationLocale]);
+    console.log(`Updated Settings:\n\tLanguage: ${translationLanguage}\n\tLocale: ${translationLocale}\n\tService: ${serviceCode}\n\tTranslationInProgress: ${translationRef.current}`);
+  }, [serviceCode, translationLanguage, translationLocale, rejoin]);
 
   useEffect(() => {
     // Get the specific church properties from the server
@@ -74,9 +77,11 @@ const Home = () => {
   // When we have a valid service code and that service ID is actively being controlled
   // on the server side, then register the app.
   useEffect(() => {
+    console.log(`In useEffect, serviceCode: ${serviceCode}, serviceReady: ${serviceReady}`);
     if (serviceCode != null && serviceCode.length > 0 && serviceReady) {
       console.log(`Received Service ID: ${serviceCode}`);
       socket.emit('register', serviceCode);
+      localStorage.setItem('serviceCode', serviceCode);
     }
   }, [serviceCode, serviceReady])
 
@@ -94,14 +99,19 @@ const Home = () => {
   // trying to register
   const handleServiceStatusCallback = (serviceStatusData) => {
     const { active } = serviceStatusData;
-    console.log(`Setting service ready to ${active}`);
     setServiceReady(active);
   }
   useEffect(() => {
     console.log(`The service status is now: ${serviceReady}`);
+    if (translationRef.current && serviceReady) {
+      const rejoinLang = localStorage.getItem('language');
+      const rejoinService = localStorage.getItem('serviceCode');
+      joinRoom(rejoinService, rejoinLang);
+    }
   }, [serviceReady]);
 
   const socketInitializer = () => {
+    console.log(`In socketInitializer`);
     socket.connect();
     socket.on('connect', () => {
       console.log(`${socket.id} connected to the socket`);
@@ -111,7 +121,17 @@ const Home = () => {
       } else {
         // This means that all rooms, connections have been lost, so we need to re-establish
         console.log(`Unable to recover socket: ${socket.id}`);
-        console.log(`Current Settings:\n\tLanguage: ${translationLanguage}\n\tLocale: ${translationLocale}\n\tService: ${serviceCode}`);
+        console.log(`Current Settings:\n\tLanguage: ${translationLanguage}\n\tLocale: ${translationLocale}\n\tService: ${serviceCode}\n\tTranslationInProgress: ${translationInProgress}`);
+
+        // Rejoin if currently translating
+        if (translationRef.current) {
+          const rejoinLang = localStorage.getItem('language');
+          const rejoinService = localStorage.getItem('serviceCode');
+          setServiceCode(rejoinService);
+          // Attempt to trigger a re-render of the Service status check
+          setRejoin(true);
+          console.log(`Attempting to rejoin ${rejoinService}:${rejoinLang}`)
+        }
       }
 
       if (serviceId == null || serviceId.length == 0 || serviceId == "") {
@@ -136,17 +156,17 @@ const Home = () => {
     })
   }
 
-  const joinRoom = (language) => {
-    const room = `${serviceCode}:${language}`;
+  const joinRoom = (id, language) => {
+    const room = `${id}:${language}`;
     console.log(`Joining room: ${room}`)
     socket.emit('join', room)
 
-    const transcriptRoom = `${serviceCode}:transcript`
+    const transcriptRoom = `${id}:transcript`
     console.log(`Joining ${transcriptRoom}`)
 
     socket.emit('join', transcriptRoom)
     setTranslationInProgress(true);
-
+    translationRef.current = true;
   }
 
   const handleLivestreamCallback = (status) => {
@@ -158,11 +178,12 @@ const Home = () => {
     const language = getLanguage(locale);
     setTranslationLanguage(language);
     setTranslationLocale(locale);
+    localStorage.setItem('language', language);
     console.log(`Setting the language to ${language} and locale to ${locale}`);
-    joinRoom(language);
+    joinRoom(serviceCode, language);
   }
 
-  const handleChangeLanguageButton = () => {
+  const handleStopTranslationButton = () => {
     const room = `${serviceCode}:${translationLanguage}`;
     console.log(`Leaving room ${room}`);
     socket.emit('leave', room);
@@ -171,6 +192,11 @@ const Home = () => {
     const transcriptRoom = `${serviceCode}:transcript`;
     socket.emit('leave', transcriptRoom);
     setTranslationInProgress(false);
+    translationRef.current = false;
+
+    // And clear out the translation/transcript
+    setTranscript(null);
+    setTranslate(null);
   }
 
   return (
@@ -186,7 +212,7 @@ const Home = () => {
         <ServiceStatusComponent serviceId={serviceCode} parentCallback={handleServiceStatusCallback} />
         <LivestreamComponent socket={socket} parentCallback={handleLivestreamCallback} />
         <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
-        {!translationInProgress &&
+        {!translationRef.current &&
           <div className={styles.home}>
             <div className={styles.inputBox}>
               <LogoComponent serverName={serverName} />
@@ -201,11 +227,11 @@ const Home = () => {
             </div>
           </div>
         }
-        {translationInProgress &&
+        {translationRef.current &&
           <div className={styles.translatePage}>
             <TranslationBoxComponent translate={translate} transcript={transcript} language={translationLanguage} />
             <AudioComponent locale={translationLocale} translate={translate} />
-            <ChangeLanguageButtonComponent onClick={handleChangeLanguageButton} />
+            <StopTranslationButtonComponent onClick={handleStopTranslationButton} />
             {/* */}
           </div>
         }
