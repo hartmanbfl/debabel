@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from '@/styles/DisplayTranscript.module.css'
 
-const DisplayTranscriptButtonComponent = ({ onClick }) => {
+const DisplayTranscriptButtonComponent = ({ onChange }) => {
     
     return (
         <>
