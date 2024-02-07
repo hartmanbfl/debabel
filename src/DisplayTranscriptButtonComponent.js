@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from '@/styles/DisplayTranscript.module.css'
 
 const DisplayTranscriptButtonComponent = ({ diplayTranscript }) => {
-    const [displayTranscript] = useState(false)
+    const [displayTranscript, setDisplayTranscript] = useState(false)
 
     const handleDisplayTranscriptChange = () => {
         setDisplayTranscript(!displayTranscript)
