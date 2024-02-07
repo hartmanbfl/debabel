@@ -43,7 +43,7 @@ const TranslationBoxComponent = ({ translate, transcript, language }) => {
                 textPair.appendChild(translateP)
                 textPair.appendChild(transcriptP)
 //            }
-            if (language == "ar") {
+            if (language == "ar" || language == "fa") {
                 outerBox.dir = "rtl"
             } else {
                 outerBox.dir = "ltr"
