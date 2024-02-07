@@ -15,6 +15,7 @@ import TranslationBoxComponent from '@/src/TranslationBoxComponent'
 import WaitingMessageComponent from '@/src/WaitingMessageComponent'
 import StopTranslationButtonComponent from '@/src/StopTranslationButtonComponent'
 import LivestreamComponent from '@/src/LivestreamComponent'
+import DisplayTranscriptButtonComponent from '@/src/DisplayTranscriptButtonComponent'
 
 const Home = () => {
   const router = useRouter()
