@@ -10,7 +10,7 @@ const buttonStyle = {
     bottom: '10%',
 };
 
-const ChangeLanguageButtonComponent = ({ onClick }) => {
+const StopTranslationButtonComponent = ({ onClick }) => {
 
     return (
         <div>
@@ -21,4 +21,4 @@ const ChangeLanguageButtonComponent = ({ onClick }) => {
     )
 }
 
-export default ChangeLanguageButtonComponent;
+export default StopTranslationButtonComponent;
