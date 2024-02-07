@@ -33,7 +33,7 @@ const Home = () => {
   const [translationInProgress, setTranslationInProgress] = useState(false);
   const [translate, setTranslate] = useState()
   const [transcript, setTranscript] = useState()
-  const [displayTranscript, setdisplayTranscript] = useState();
+  const [displayTranscript, setDisplayTranscript] = useState();
   
   const [translationLanguage, setTranslationLanguage] = useState();
   const [translationLocale, setTranslationLocale] = useState();
