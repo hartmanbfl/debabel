@@ -33,7 +33,7 @@ const Home = () => {
   const [translationInProgress, setTranslationInProgress] = useState(false);
   const [translate, setTranslate] = useState()
   const [transcript, setTranscript] = useState()
-  const [displayTranscript, setDisplayTranscript] = useState();
+  const [displayTranscript, setDisplayTranscript] = useState(false);
   
   const [translationLanguage, setTranslationLanguage] = useState();
   const [translationLocale, setTranslationLocale] = useState();
@@ -184,6 +184,10 @@ const Home = () => {
     console.log(`Setting the language to ${language} and locale to ${locale}`);
     joinRoom(serviceCode, language);
   }
+
+  const handleDisplayTranscriptSwitch = () => {
+    setDisplayTranscript(!displayTranscript);
+  }
   
   const handleStopTranslationButton = () => {
     const room = `${serviceCode}:${translationLanguage}`;
@@ -233,7 +237,7 @@ const Home = () => {
           <div className={styles.translatePage}>
             <TranslationBoxComponent translate={translate} transcript={transcript} language={translationLanguage} displayTranscript={displayTranscript}/>
             <AudioComponent locale={translationLocale} translate={translate} />
-            <DisplayTranscriptButtonComponent displayTranscript={displayTranscript} />
+            <DisplayTranscriptButtonComponent onChange={handleDisplayTranscriptSwitch} />
             <StopTranslationButtonComponent onClick={handleStopTranslationButton} />
             {/* */}
           </div>
