@@ -10,7 +10,7 @@ const DisplayTranscriptButtonComponent = ({ onChange }) => {
                     <input id='input' type="checkbox" onChange={onChange} />
                     <span className={styles.slider}></span>
                 </label>
-                <p>Show original language</p>
+                <p>Show host language</p>
             </div>
         </>
     )
