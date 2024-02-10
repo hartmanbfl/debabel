@@ -15,6 +15,7 @@ import TranslationBoxComponent from '@/src/TranslationBoxComponent'
 import WaitingMessageComponent from '@/src/WaitingMessageComponent'
 import StopTranslationButtonComponent from '@/src/StopTranslationButtonComponent'
 import LivestreamComponent from '@/src/LivestreamComponent'
+import DisplayTranscriptButtonComponent from '@/src/DisplayTranscriptButtonComponent'
 
 const Home = () => {
   const router = useRouter()
@@ -32,7 +33,8 @@ const Home = () => {
   const [translationInProgress, setTranslationInProgress] = useState(false);
   const [translate, setTranslate] = useState()
   const [transcript, setTranscript] = useState()
-
+  const [displayTranscript, setDisplayTranscript] = useState(false);
+  
   const [translationLanguage, setTranslationLanguage] = useState();
   const [translationLocale, setTranslationLocale] = useState();
 
@@ -183,6 +185,10 @@ const Home = () => {
     joinRoom(serviceCode, language);
   }
 
+  const handleDisplayTranscriptSwitch = () => {
+    setDisplayTranscript(!displayTranscript);
+  }
+  
   const handleStopTranslationButton = () => {
     const room = `${serviceCode}:${translationLanguage}`;
     console.log(`Leaving room ${room}`);
@@ -229,8 +235,9 @@ const Home = () => {
         }
         {translationRef.current &&
           <div className={styles.translatePage}>
-            <TranslationBoxComponent translate={translate} transcript={transcript} language={translationLanguage} />
+            <TranslationBoxComponent translate={translate} transcript={transcript} language={translationLanguage} displayTranscript={displayTranscript}/>
             <AudioComponent locale={translationLocale} translate={translate} />
+            <DisplayTranscriptButtonComponent onChange={handleDisplayTranscriptSwitch} />
             <StopTranslationButtonComponent onClick={handleStopTranslationButton} />
             {/* */}
           </div>
