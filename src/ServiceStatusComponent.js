@@ -38,9 +38,10 @@ const ServiceStatusComponent = ({ serviceId, parentCallback }) => {
     }
     const fetchData = async (serviceId) => {
 //debug        console.log(`Fetching server status for: ${serviceId} `);
-        const response = await (fetch(`${serverName}/serviceStatus?serviceId=${serviceId}`))
+        const response = await (fetch(`${serverName}/church/status?serviceId=${serviceId}`))
             .catch(handleFetchError);
-        const data = await response.json();
+        const jsonResponse = await response.json();
+        const data = jsonResponse.responseObject;
         setApiData(data);
     }
 

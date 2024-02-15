@@ -6,10 +6,10 @@ const LogoComponent = ( {serverName} ) => {
     const [imageUrl, setImageUrl] = useState(null);
 
     useEffect(() => {
-        fetch(`${serverName}/churchinfo`)
+        fetch(`${serverName}/church/info`)
           .then(response => response.json())
           .then(data => {
-              setImageUrl(`${data.base64Logo}`);  
+              setImageUrl(`${data.responseObject.base64Logo}`);  
           });
       }, []);
 

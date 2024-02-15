@@ -56,8 +56,9 @@ const Home = () => {
   useEffect(() => {
     // Get the specific church properties from the server
     const fetchData = async () => {
-      const response = await fetch(`${serverName}/churchinfo`);
-      const data = await response.json();
+      const response = await fetch(`${serverName}/church/info`);
+      const jsonResponse = await response.json();
+      const data = jsonResponse.responseObject;
       if (data.translationLanguages != null) {
         setLanguageMap(JSON.parse(data.translationLanguages));
       }
