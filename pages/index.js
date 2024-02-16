@@ -15,6 +15,7 @@ import TranslationBoxComponent from '@/src/TranslationBoxComponent'
 import WaitingMessageComponent from '@/src/WaitingMessageComponent'
 import StopTranslationButtonComponent from '@/src/StopTranslationButtonComponent'
 import LivestreamComponent from '@/src/LivestreamComponent'
+import { resolve } from 'styled-jsx/css'
 
 const Home = () => {
   const router = useRouter()
@@ -54,22 +55,35 @@ const Home = () => {
   }, [serviceCode, translationLanguage, translationLocale, rejoin]);
 
   useEffect(() => {
+
     // Get the specific church properties from the server
     const fetchData = async () => {
-      const response = await fetch(`${serverName}/church/info`);
-      const jsonResponse = await response.json();
-      const data = jsonResponse.responseObject;
-      if (data.translationLanguages != null) {
-        setLanguageMap(JSON.parse(data.translationLanguages));
+      try {
+        const response = await fetch(`${serverName}/church/info`)
+        if (!response.ok) {
+          throw new Error("Network response was not OK");
+        }
+        //        .catch((error) => {
+        //          console.warn(`Error getting church info: ${error} `);
+        //        });
+        //      if (response == null) return;
+
+        const jsonResponse = await response.json();
+        const data = jsonResponse.responseObject;
+        if (data.translationLanguages != null) {
+          setLanguageMap(JSON.parse(data.translationLanguages));
+        }
+        setDefaultServiceId(data.defaultServiceId);
+        const churchMessages = JSON.parse(data.message);
+        setChurchWelcome({
+          greeting: data.greeting,
+          messages: churchMessages,
+          additionalMessage: data.additionalWelcome,
+          waiting: data.waiting
+        })
+      } catch (error) {
+        console.warn(`Error getting church info: ${error} `);
       }
-      setDefaultServiceId(data.defaultServiceId);
-      const churchMessages = JSON.parse(data.message);
-      setChurchWelcome({
-        greeting: data.greeting,
-        messages: churchMessages,
-        additionalMessage: data.additionalWelcome,
-        waiting: data.waiting
-      })
     }
 
     fetchData();
