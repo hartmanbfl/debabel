@@ -15,7 +15,6 @@ import TranslationBoxComponent from '@/src/TranslationBoxComponent'
 import WaitingMessageComponent from '@/src/WaitingMessageComponent'
 import StopTranslationButtonComponent from '@/src/StopTranslationButtonComponent'
 import LivestreamComponent from '@/src/LivestreamComponent'
-import { resolve } from 'styled-jsx/css'
 
 const Home = () => {
   const router = useRouter()
