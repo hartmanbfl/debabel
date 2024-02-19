@@ -37,11 +37,19 @@ const ServiceStatusComponent = ({ serviceId, parentCallback }) => {
 
     }
     const fetchData = async (serviceId) => {
-//debug        console.log(`Fetching server status for: ${serviceId} `);
-        const response = await (fetch(`${serverName}/serviceStatus?serviceId=${serviceId}`))
-            .catch(handleFetchError);
-        const data = await response.json();
+        try {
+
+        const response = await (fetch(`${serverName}/church/${serviceId}/status`))
+        if (!response.ok) {
+            throw new Error("Network response was not OK");
+        }
+        const jsonResponse = await response.json();
+        const data = jsonResponse.responseObject;
         setApiData(data);
+        } catch (error) {
+            console.warn(`Error getting status: ${error}`);
+            handleFetchError(error);
+        }
     }
 
     return (

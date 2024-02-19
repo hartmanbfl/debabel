@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import styles from '@/styles/TranslationBox.module.css'
 
 const TranslationBoxComponent = ({ translate, transcript, language }) => {
@@ -11,13 +11,20 @@ const TranslationBoxComponent = ({ translate, transcript, language }) => {
 
     // Get the host language of the church service
     useEffect(() => {
-        fetch(`${serverName}/churchinfo`)
-            .then(response => response.json())
-            .then(data => {
-                setChurchProperties({
-                    hostLanguage: data.language
-                })
-            });
+        const fetchData = async () => {
+
+            const response = await fetch(`${serverName}/church/info`)
+                .catch((error) => {
+                    console.error(`Warning: unable to get language: ${error}`);
+                    return;
+                });
+            const jsonResponse = await response.json();
+            const data = jsonResponse.responseObject;
+            setChurchProperties({
+                hostLanguage: data.language
+            })
+        };
+        fetchData();
     }, []);
 
     // Runs anytime translate changes
@@ -34,15 +41,15 @@ const TranslationBoxComponent = ({ translate, transcript, language }) => {
             textPair.className = styles.translationTranscriptPair
             translateP.className = styles.translatedText
             transcriptP.className = styles.transcriptText
-//            if (language == churchProperties.hostLanguage) {
-//                translateP.textContent = transcript
-//                textPair.appendChild(translateP)
-//            } else {
-                translateP.textContent = translate
-                transcriptP.textContent = transcript
-                textPair.appendChild(translateP)
-                textPair.appendChild(transcriptP)
-//            }
+            //            if (language == churchProperties.hostLanguage) {
+            //                translateP.textContent = transcript
+            //                textPair.appendChild(translateP)
+            //            } else {
+            translateP.textContent = translate
+            transcriptP.textContent = transcript
+            textPair.appendChild(translateP)
+            textPair.appendChild(transcriptP)
+            //            }
             if (language == "ar") {
                 outerBox.dir = "rtl"
             } else {
@@ -50,7 +57,7 @@ const TranslationBoxComponent = ({ translate, transcript, language }) => {
             }
 
 
-//            div.appendChild(p)
+            //            div.appendChild(p)
             div.appendChild(textPair)
             div.scrollTo(0, div.scrollHeight)
         }
