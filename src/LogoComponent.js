@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import styles from '@/styles/Logo.module.css'
 
 
-const LogoComponent = ({ serverName }) => {
+const LogoComponent = ({ serverName, tenantId }) => {
     const [imageUrl, setImageUrl] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
 
-                const response = await fetch(`${serverName}/church/info`)
+                const response = await fetch(`${serverName}/church/info?tenantId=${tenantId}`)
                 if (!response.ok) {
                     throw new Error("Network response was not OK");
                 }
@@ -23,7 +23,7 @@ const LogoComponent = ({ serverName }) => {
             }
         }
         fetchData();
-    }, []);
+    }, [tenantId]);
 
 
     return <div className={styles.logo}> <img src={imageUrl} alt="Church Logo"></img></div>;

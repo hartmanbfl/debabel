@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from '@/styles/TranslationBox.module.css'
 
-const TranslationBoxComponent = ({ translate, transcript, language }) => {
+const TranslationBoxComponent = ({ translate, transcript, language, tenantId }) => {
     const [churchProperties, setChurchProperties] = useState({
         hostLanguage: "en"
     });
@@ -13,7 +13,7 @@ const TranslationBoxComponent = ({ translate, transcript, language }) => {
     useEffect(() => {
         const fetchData = async () => {
 
-            const response = await fetch(`${serverName}/church/info`)
+            const response = await fetch(`${serverName}/church/info?tenantId=${tenantId}`)
                 .catch((error) => {
                     console.error(`Warning: unable to get language: ${error}`);
                     return;
@@ -25,7 +25,7 @@ const TranslationBoxComponent = ({ translate, transcript, language }) => {
             })
         };
         fetchData();
-    }, []);
+    }, [tenantId]);
 
     // Runs anytime translate changes
     useEffect(() => {

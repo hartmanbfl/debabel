@@ -20,7 +20,7 @@ const Home = () => {
   const router = useRouter()
 
   // Get any query parameters
-  const { serviceId } = router.query;
+  const { serviceId, tenantId } = router.query;
 
   const [livestream, setLivestream] = useState("OFF");
   const [languageMap, setLanguageMap] = useState([]);
@@ -57,36 +57,39 @@ const Home = () => {
 
     // Get the specific church properties from the server
     const fetchData = async () => {
-      try {
-        const response = await fetch(`${serverName}/church/info`)
-        if (!response.ok) {
-          throw new Error("Network response was not OK");
-        }
-        //        .catch((error) => {
-        //          console.warn(`Error getting church info: ${error} `);
-        //        });
-        //      if (response == null) return;
+      if (router.isReady) {
 
-        const jsonResponse = await response.json();
-        const data = jsonResponse.responseObject;
-        if (data.translationLanguages != null) {
-          setLanguageMap(JSON.parse(data.translationLanguages));
+        try {
+          const response = await fetch(`${serverName}/church/info?` + new URLSearchParams({ tenantId: tenantId }));
+          if (!response.ok) {
+            throw new Error("Network response was not OK");
+          }
+          //        .catch((error) => {
+          //          console.warn(`Error getting church info: ${error} `);
+          //        });
+          //      if (response == null) return;
+
+          const jsonResponse = await response.json();
+          const data = jsonResponse.responseObject;
+          if (data.translationLanguages != null) {
+            setLanguageMap(JSON.parse(data.translationLanguages));
+          }
+          setDefaultServiceId(data.defaultServiceId);
+          const churchMessages = JSON.parse(data.message);
+          setChurchWelcome({
+            greeting: data.greeting,
+            messages: churchMessages,
+            additionalMessage: data.additionalWelcome,
+            waiting: data.waiting
+          })
+        } catch (error) {
+          console.warn(`Error getting church info: ${error} `);
         }
-        setDefaultServiceId(data.defaultServiceId);
-        const churchMessages = JSON.parse(data.message);
-        setChurchWelcome({
-          greeting: data.greeting,
-          messages: churchMessages,
-          additionalMessage: data.additionalWelcome,
-          waiting: data.waiting
-        })
-      } catch (error) {
-        console.warn(`Error getting church info: ${error} `);
       }
     }
 
     fetchData();
-  }, [])
+  }, [router.isReady])
 
   // When we have a valid service code and that service ID is actively being controlled
   // on the server side, then register the app.
@@ -229,7 +232,7 @@ const Home = () => {
         {!translationRef.current &&
           <div className={styles.home}>
             <div className={styles.inputBox}>
-              <LogoComponent serverName={serverName} />
+              <LogoComponent serverName={serverName} tenantId={tenantId}/>
               {/* */}
               <WelcomeMessageComponent churchWelcome={churchWelcome} />
               {serviceReady &&
@@ -243,7 +246,7 @@ const Home = () => {
         }
         {translationRef.current &&
           <div className={styles.translatePage}>
-            <TranslationBoxComponent translate={translate} transcript={transcript} language={translationLanguage} />
+            <TranslationBoxComponent translate={translate} transcript={transcript} language={translationLanguage} tenantId={tenantId}/>
             <AudioComponent locale={translationLocale} translate={translate} />
             <StopTranslationButtonComponent onClick={handleStopTranslationButton} />
             {/* */}
