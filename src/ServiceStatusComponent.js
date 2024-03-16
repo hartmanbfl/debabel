@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
 
-const ServiceStatusComponent = ({ serviceId, parentCallback }) => {
+const ServiceStatusComponent = ({ serviceId, tenantId, parentCallback }) => {
     const instance = useRef({ interval: 0 });
     const [apiData, setApiData] = useState(null);
 
@@ -39,7 +39,7 @@ const ServiceStatusComponent = ({ serviceId, parentCallback }) => {
     const fetchData = async (serviceId) => {
         try {
 
-        const response = await (fetch(`${serverName}/church/${serviceId}/status`))
+        const response = await (fetch(`${serverName}/church/${serviceId}/status?tenantId=${tenantId}`))
         if (!response.ok) {
             throw new Error("Network response was not OK");
         }

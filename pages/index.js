@@ -2,7 +2,7 @@ import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
-import socket from '../src/socket'
+//import socket from '../src/socket'
 import { getLanguage } from '@/src/Utilities'
 
 import AudioComponent from '@/src/AudioComponent'
@@ -16,6 +16,10 @@ import WaitingMessageComponent from '@/src/WaitingMessageComponent'
 import StopTranslationButtonComponent from '@/src/StopTranslationButtonComponent'
 import LivestreamComponent from '@/src/LivestreamComponent'
 
+import io from 'socket.io-client'
+
+let socket;
+
 const Home = () => {
   const router = useRouter()
 
@@ -28,6 +32,8 @@ const Home = () => {
   const [serviceCode, setServiceCode] = useState("")
   const [serviceReady, setServiceReady] = useState(false);
   const [rejoin, setRejoin] = useState(false);
+
+  const [socketInitialized, setSocketInitialized] = useState(false);
 
   const [translationInProgress, setTranslationInProgress] = useState(false);
   const [translate, setTranslate] = useState()
@@ -48,6 +54,7 @@ const Home = () => {
 
   const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
 
+
   // Keep track of when things change
   useEffect(() => {
     console.log(`Updated Settings:\n\tLanguage: ${translationLanguage}\n\tLocale: ${translationLocale}\n\tService: ${serviceCode}\n\tTranslationInProgress: ${translationRef.current}`);
@@ -57,17 +64,18 @@ const Home = () => {
 
     // Get the specific church properties from the server
     const fetchData = async () => {
-      if (router.isReady) {
+      console.log(`Router:  serviceId-> ${serviceId} / tenantId-> ${tenantId} / socketInitialized-> ${socketInitialized}`);
+      if (router.isReady && tenantId) {
 
+        console.log(`Initializing the socket to ${serverName}/client-${tenantId}`);
+        socket = io(`${serverName}/client-${tenantId}`, { autoConnect: false });
+//        socket = io(`${serverName}`, { autoConnect: false });
+        setSocketInitialized(true);
         try {
           const response = await fetch(`${serverName}/church/info?` + new URLSearchParams({ tenantId: tenantId }));
           if (!response.ok) {
             throw new Error("Network response was not OK");
           }
-          //        .catch((error) => {
-          //          console.warn(`Error getting church info: ${error} `);
-          //        });
-          //      if (response == null) return;
 
           const jsonResponse = await response.json();
           const data = jsonResponse.responseObject;
@@ -106,10 +114,13 @@ const Home = () => {
     // Need to check if the router is ready before trying to get the serviceId
     // from the query parameter. Also the default needs to be received from
     // the server
-    if (router.isReady && defaultServiceId.length > 0) {
+//    if (router.isReady && defaultServiceId.length > 0) {
+  if (socketInitialized) {
+      console.log(`Socket Initialized with Router:  serviceId-> ${serviceId} / tenantId-> ${tenantId}`);
       socketInitializer(), []
     }
-  }, [router.isReady, defaultServiceId])
+//  }, [router.isReady, defaultServiceId, socketInitialized])
+  }, [socketInitialized])
 
 
   // Make sure the server side has initialized this service before
@@ -129,6 +140,7 @@ const Home = () => {
 
   const socketInitializer = () => {
     console.log(`In socketInitializer`);
+
     socket.connect();
     socket.on('connect', () => {
       console.log(`${socket.id} connected to the socket`);
@@ -226,8 +238,10 @@ const Home = () => {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
       </Head>
       <div className={styles.container}>
-        <ServiceStatusComponent serviceId={serviceCode} parentCallback={handleServiceStatusCallback} />
-        <LivestreamComponent socket={socket} parentCallback={handleLivestreamCallback} />
+        <ServiceStatusComponent serviceId={serviceCode} tenantId={tenantId} parentCallback={handleServiceStatusCallback} />
+        {socketInitialized &&
+            <LivestreamComponent socket={socket} parentCallback={handleLivestreamCallback} />
+        }
         <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
         {!translationRef.current &&
           <div className={styles.home}>
