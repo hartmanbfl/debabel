@@ -72,7 +72,16 @@ const Home = () => {
 //        socket = io(`${serverName}`, { autoConnect: false });
         setSocketInitialized(true);
         try {
-          const response = await fetch(`${serverName}/church/info?` + new URLSearchParams({ tenantId: tenantId }));
+          const response = await fetch(`${serverName}/church/info?` + new URLSearchParams({ tenantId: tenantId }), {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+          
+          );
           if (!response.ok) {
             throw new Error("Network response was not OK");
           }
