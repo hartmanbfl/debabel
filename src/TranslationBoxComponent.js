@@ -1,36 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styles from '@/styles/TranslationBox.module.css'
 
-const TranslationBoxComponent = ({ translate, transcript, language }) => {
-    const [churchProperties, setChurchProperties] = useState({
-        hostLanguage: "en"
-    });
-
-    // Get the Server name from environment variable
-    const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
-
-    // Get the host language of the church service
-    useEffect(() => {
-        const fetchData = async () => {
-
-            const response = await fetch(`${serverName}/church/info`)
-                .catch((error) => {
-                    console.error(`Warning: unable to get language: ${error}`);
-                    return;
-                });
-            const jsonResponse = await response.json();
-            const data = jsonResponse.responseObject;
-            setChurchProperties({
-                hostLanguage: data.language
-            })
-        };
-        fetchData();
-    }, []);
+const TranslationBoxComponent = ({ translate, transcript, language, hostLanguage }) => {
 
     // Runs anytime translate changes
     useEffect(() => {
         const addTranslate = () => {
-            console.log(`Translate: ${translate}, transcript: ${transcript}, hostLang: ${churchProperties.hostLanguage}, langugage: ${language}`);
+            console.log(`Translate: ${translate}, transcript: ${transcript}, hostLang: ${hostLanguage}, langugage: ${language}`);
             const div = document.getElementById('translationBox')
             const outerBox = document.getElementById('translationOuterBox')
 
