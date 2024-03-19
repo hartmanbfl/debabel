@@ -88,13 +88,14 @@ const Home = () => {
       console.log(`Router:  serviceId-> ${serviceId} / tenantId-> ${tenantId} / socketInitialized-> ${socketInitialized}`);
       if (router.isReady && tenantId) {
 
-        console.log(`Initializing the socket to ${serverName}/client-${tenantId}`);
-        if (process.env.NEXT_PUBLIC_USE_DEVICE_COOKIE) {
+        if (deviceCookie) {
+          console.log(`Initializing the socket to ${serverName}/client-${tenantId} and using device cookie`);
           socket = io(`${serverName}/client-${tenantId}`, {
             autoConnect: false,
             withCredentials: true
           });
         } else {
+          console.log(`Initializing the socket to ${serverName}/client-${tenantId} and using device header`);
           socket = io(`${serverName}/client-${tenantId}`, {
             autoConnect: false,
             extraHeaders: {
