@@ -35,6 +35,9 @@ const Home = () => {
 
   const [socketInitialized, setSocketInitialized] = useState(false);
 
+  const [hostLanguage, setHostLanguage] = useState(null);
+  const [logo, setLogo] = useState(null);
+
   const [translationInProgress, setTranslationInProgress] = useState(false);
   const [translate, setTranslate] = useState()
   const [transcript, setTranscript] = useState()
@@ -72,7 +75,7 @@ const Home = () => {
 //        socket = io(`${serverName}`, { autoConnect: false });
         setSocketInitialized(true);
         try {
-          const response = await fetch(`${serverName}/church/info?` + new URLSearchParams({ tenantId: tenantId }), {
+          const response = await fetch(`${serverName}/church/info?` + new URLSearchParams({ tenantId: tenantId }), { 
             method: 'GET',
             mode: 'cors',
             credentials: 'include',
@@ -98,7 +101,9 @@ const Home = () => {
             messages: churchMessages,
             additionalMessage: data.additionalWelcome,
             waiting: data.waiting
-          })
+          });
+          setHostLanguage(data.language);
+          setLogo(data.base64Logo);
         } catch (error) {
           console.warn(`Error getting church info: ${error} `);
         }
@@ -255,7 +260,7 @@ const Home = () => {
         {!translationRef.current &&
           <div className={styles.home}>
             <div className={styles.inputBox}>
-              <LogoComponent serverName={serverName} tenantId={tenantId}/>
+              <LogoComponent serverName={serverName} tenantId={tenantId} logo={logo}/>
               {/* */}
               <WelcomeMessageComponent churchWelcome={churchWelcome} />
               {serviceReady &&
@@ -269,7 +274,7 @@ const Home = () => {
         }
         {translationRef.current &&
           <div className={styles.translatePage}>
-            <TranslationBoxComponent translate={translate} transcript={transcript} language={translationLanguage} tenantId={tenantId}/>
+            <TranslationBoxComponent translate={translate} transcript={transcript} language={translationLanguage} hostLanguage={hostLanguage}/>
             <AudioComponent locale={translationLocale} translate={translate} />
             <StopTranslationButtonComponent onClick={handleStopTranslationButton} />
             {/* */}
