@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from 'react'
 //import socket from '../src/socket'
 import { getLanguage } from '@/src/Utilities'
 
+import { v4 as uuidv4 } from 'uuid';
+
 import AudioComponent from '@/src/AudioComponent'
 import LogoComponent from '@/src/LogoComponent'
 import LanguageButtonDropdownComponent from '@/src/LanguageButtonDropdownComponent'
@@ -45,6 +47,8 @@ const Home = () => {
   const [translationLanguage, setTranslationLanguage] = useState();
   const [translationLocale, setTranslationLocale] = useState();
 
+  const [deviceId, setDeviceId] = useState(null);
+
   const translationRef = useRef(false);
 
 
@@ -56,7 +60,21 @@ const Home = () => {
   });
 
   const serverName = process.env.NEXT_PUBLIC_SERVER_NAME;
+  const deviceCookie = process.env.NEXT_PUBLIC_USE_DEVICE_COOKIE;
 
+  // First render
+  useEffect(() => {
+    const deviceId = localStorage.getItem('deviceId');
+    if (deviceId) {
+      setDeviceId(deviceId);
+    } else {
+      const id = uuidv4();
+      setDeviceId(id);
+    }
+  }, []);
+  useEffect(() => {
+    localStorage.setItem('deviceId', deviceId);
+  }, [deviceId])
 
   // Keep track of when things change
   useEffect(() => {
@@ -71,19 +89,23 @@ const Home = () => {
       if (router.isReady && tenantId) {
 
         console.log(`Initializing the socket to ${serverName}/client-${tenantId}`);
-        socket = io(`${serverName}/client-${tenantId}`, { autoConnect: false, withCredentials: true });
-//        socket = io(`${serverName}`, { autoConnect: false });
+        if (process.env.NEXT_PUBLIC_USE_DEVICE_COOKIE) {
+          socket = io(`${serverName}/client-${tenantId}`, {
+            autoConnect: false,
+            withCredentials: true
+          });
+        } else {
+          socket = io(`${serverName}/client-${tenantId}`, {
+            autoConnect: false,
+            extraHeaders: {
+              "device-identifier": deviceId
+            }
+          });
+        }
+        //        socket = io(`${serverName}`, { autoConnect: false });
         setSocketInitialized(true);
         try {
           const response = await fetch(`${serverName}/church/info?` + new URLSearchParams({ tenantId: tenantId })
-//            method: 'GET',
-//            mode: 'cors',
-//            credentials: 'include',
-//            headers: {
-//              'Content-Type': 'application/json'
-//            }
-//          }
-          
           );
           if (!response.ok) {
             throw new Error("Network response was not OK");
@@ -128,12 +150,12 @@ const Home = () => {
     // Need to check if the router is ready before trying to get the serviceId
     // from the query parameter. Also the default needs to be received from
     // the server
-//    if (router.isReady && defaultServiceId.length > 0) {
-  if (socketInitialized) {
+    //    if (router.isReady && defaultServiceId.length > 0) {
+    if (socketInitialized) {
       console.log(`Socket Initialized with Router:  serviceId-> ${serviceId} / tenantId-> ${tenantId}`);
       socketInitializer(), []
     }
-//  }, [router.isReady, defaultServiceId, socketInitialized])
+    //  }, [router.isReady, defaultServiceId, socketInitialized])
   }, [socketInitialized])
 
 
@@ -254,13 +276,13 @@ const Home = () => {
       <div className={styles.container}>
         <ServiceStatusComponent serviceId={serviceCode} tenantId={tenantId} parentCallback={handleServiceStatusCallback} />
         {socketInitialized &&
-            <LivestreamComponent socket={socket} parentCallback={handleLivestreamCallback} />
+          <LivestreamComponent socket={socket} parentCallback={handleLivestreamCallback} />
         }
         <PageHeaderComponent textLabel="DeBabel" sessionStatus={livestream} />
         {!translationRef.current &&
           <div className={styles.home}>
             <div className={styles.inputBox}>
-              <LogoComponent serverName={serverName} tenantId={tenantId} logo={logo}/>
+              <LogoComponent serverName={serverName} tenantId={tenantId} logo={logo} />
               {/* */}
               <WelcomeMessageComponent churchWelcome={churchWelcome} />
               {serviceReady &&
@@ -274,7 +296,7 @@ const Home = () => {
         }
         {translationRef.current &&
           <div className={styles.translatePage}>
-            <TranslationBoxComponent translate={translate} transcript={transcript} language={translationLanguage} hostLanguage={hostLanguage}/>
+            <TranslationBoxComponent translate={translate} transcript={transcript} language={translationLanguage} hostLanguage={hostLanguage} />
             <AudioComponent locale={translationLocale} translate={translate} />
             <StopTranslationButtonComponent onClick={handleStopTranslationButton} />
             {/* */}
