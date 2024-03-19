@@ -71,18 +71,18 @@ const Home = () => {
       if (router.isReady && tenantId) {
 
         console.log(`Initializing the socket to ${serverName}/client-${tenantId}`);
-        socket = io(`${serverName}/client-${tenantId}`, { autoConnect: false });
+        socket = io(`${serverName}/client-${tenantId}`, { autoConnect: false, withCredentials: true });
 //        socket = io(`${serverName}`, { autoConnect: false });
         setSocketInitialized(true);
         try {
-          const response = await fetch(`${serverName}/church/info?` + new URLSearchParams({ tenantId: tenantId }), { 
-            method: 'GET',
-            mode: 'cors',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
+          const response = await fetch(`${serverName}/church/info?` + new URLSearchParams({ tenantId: tenantId })
+//            method: 'GET',
+//            mode: 'cors',
+//            credentials: 'include',
+//            headers: {
+//              'Content-Type': 'application/json'
+//            }
+//          }
           
           );
           if (!response.ok) {
